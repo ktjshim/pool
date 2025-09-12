@@ -208,6 +208,7 @@ __marimo__/
 
 
 
-
-.graphtoken/output
-.graphtoken/wandb
+data
+graphtoken/output
+graphtoken/wandb
+graphtoken/process
