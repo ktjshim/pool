@@ -1,0 +1,160 @@
+2025-09-11 14:15:35,046 INFO    MainThread:3592428 [wandb_setup.py:_flush():80] Current SDK version is 0.21.1
+2025-09-11 14:15:35,046 INFO    MainThread:3592428 [wandb_setup.py:_flush():80] Configure stats pid to 3592428
+2025-09-11 14:15:35,046 INFO    MainThread:3592428 [wandb_setup.py:_flush():80] Loading settings from /home/ktshim/.config/wandb/settings
+2025-09-11 14:15:35,046 INFO    MainThread:3592428 [wandb_setup.py:_flush():80] Loading settings from /nas/home/ktshim/tool/pool/graphtoken/wandb/settings
+2025-09-11 14:15:35,046 INFO    MainThread:3592428 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-09-11 14:15:35,047 INFO    MainThread:3592428 [wandb_init.py:setup_run_log_directory():703] Logging user logs to /nas/home/ktshim/tool/pool/graphtoken/wandb/run-20250911_141535-e3o4ojwc/logs/debug.log
+2025-09-11 14:15:35,047 INFO    MainThread:3592428 [wandb_init.py:setup_run_log_directory():704] Logging internal logs to /nas/home/ktshim/tool/pool/graphtoken/wandb/run-20250911_141535-e3o4ojwc/logs/debug-internal.log
+2025-09-11 14:15:35,047 INFO    MainThread:3592428 [wandb_init.py:init():830] calling init triggers
+2025-09-11 14:15:35,047 INFO    MainThread:3592428 [wandb_init.py:init():835] wandb.init called with sweep_config: {}
+config: {'_wandb': {}}
+2025-09-11 14:15:35,048 INFO    MainThread:3592428 [wandb_init.py:init():871] starting backend
+2025-09-11 14:15:35,254 INFO    MainThread:3592428 [wandb_init.py:init():874] sending inform_init request
+2025-09-11 14:15:35,259 INFO    MainThread:3592428 [wandb_init.py:init():882] backend started and connected
+2025-09-11 14:15:35,261 INFO    MainThread:3592428 [wandb_init.py:init():953] updated telemetry
+2025-09-11 14:15:35,264 INFO    MainThread:3592428 [wandb_init.py:init():977] communicating run to backend with 90.0 second timeout
+2025-09-11 14:15:36,048 INFO    MainThread:3592428 [wandb_init.py:init():1029] starting run threads in backend
+2025-09-11 14:15:36,097 INFO    MainThread:3592428 [wandb_run.py:_console_start():2494] atexit reg
+2025-09-11 14:15:36,098 INFO    MainThread:3592428 [wandb_run.py:_redirect():2342] redirect: wrap_raw
+2025-09-11 14:15:36,098 INFO    MainThread:3592428 [wandb_run.py:_redirect():2411] Wrapping output streams.
+2025-09-11 14:15:36,098 INFO    MainThread:3592428 [wandb_run.py:_redirect():2434] Redirects installed.
+2025-09-11 14:15:36,099 INFO    MainThread:3592428 [wandb_init.py:init():1075] run started, returning control to user process
+2025-09-11 14:40:00,308 INFO    MsgRouterThr:3592428 [mailbox.py:close():129] [no run ID] Closing mailbox, abandoning 1 handles.
+2025-09-11 14:40:02,267 ERROR   MainThread:3592428 [redirect.py:_on_write():664] [all runs] error in stderr callback
+Traceback (most recent call last):
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 2421, in <lambda>
+    lambda data: self._console_raw_callback("stderr", data),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 399, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 457, in wrapper_fn
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 1583, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/interface/interface.py", line 770, in publish_output_raw
+    o.timestamp.GetCurrentTime()
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 184, in GetCurrentTime
+    self.FromDatetime(datetime.datetime.now(tz=datetime.timezone.utc))
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 283, in FromDatetime
+    seconds = calendar.timegm(dt.utctimetuple())
+                              ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: import of time halted; None in sys.modules
+2025-09-11 14:40:02,270 ERROR   MainThread:3592428 [redirect.py:_on_write():664] [all runs] error in stderr callback
+Traceback (most recent call last):
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 2421, in <lambda>
+    lambda data: self._console_raw_callback("stderr", data),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 399, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 457, in wrapper_fn
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 1583, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/interface/interface.py", line 770, in publish_output_raw
+    o.timestamp.GetCurrentTime()
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 184, in GetCurrentTime
+    self.FromDatetime(datetime.datetime.now(tz=datetime.timezone.utc))
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 283, in FromDatetime
+    seconds = calendar.timegm(dt.utctimetuple())
+                              ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: import of time halted; None in sys.modules
+2025-09-11 14:40:02,271 ERROR   MainThread:3592428 [redirect.py:_on_write():664] [all runs] error in stderr callback
+Traceback (most recent call last):
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 2421, in <lambda>
+    lambda data: self._console_raw_callback("stderr", data),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 399, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 457, in wrapper_fn
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 1583, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/interface/interface.py", line 770, in publish_output_raw
+    o.timestamp.GetCurrentTime()
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 184, in GetCurrentTime
+    self.FromDatetime(datetime.datetime.now(tz=datetime.timezone.utc))
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 283, in FromDatetime
+    seconds = calendar.timegm(dt.utctimetuple())
+                              ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: import of time halted; None in sys.modules
+2025-09-11 14:40:02,271 ERROR   MainThread:3592428 [redirect.py:_on_write():664] [all runs] error in stderr callback
+Traceback (most recent call last):
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 2421, in <lambda>
+    lambda data: self._console_raw_callback("stderr", data),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 399, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 457, in wrapper_fn
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 1583, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/interface/interface.py", line 770, in publish_output_raw
+    o.timestamp.GetCurrentTime()
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 184, in GetCurrentTime
+    self.FromDatetime(datetime.datetime.now(tz=datetime.timezone.utc))
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 283, in FromDatetime
+    seconds = calendar.timegm(dt.utctimetuple())
+                              ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: import of time halted; None in sys.modules
+2025-09-11 14:40:02,272 ERROR   MainThread:3592428 [redirect.py:_on_write():664] [all runs] error in stderr callback
+Traceback (most recent call last):
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 2421, in <lambda>
+    lambda data: self._console_raw_callback("stderr", data),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 399, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 457, in wrapper_fn
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 1583, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/interface/interface.py", line 770, in publish_output_raw
+    o.timestamp.GetCurrentTime()
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 184, in GetCurrentTime
+    self.FromDatetime(datetime.datetime.now(tz=datetime.timezone.utc))
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 283, in FromDatetime
+    seconds = calendar.timegm(dt.utctimetuple())
+                              ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: import of time halted; None in sys.modules
+2025-09-11 14:40:02,272 ERROR   MainThread:3592428 [redirect.py:_on_write():664] [all runs] error in stderr callback
+Traceback (most recent call last):
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/lib/redirect.py", line 662, in _on_write
+    cb(written_data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 2421, in <lambda>
+    lambda data: self._console_raw_callback("stderr", data),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 399, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 457, in wrapper_fn
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/wandb_run.py", line 1583, in _console_raw_callback
+    self._backend.interface.publish_output_raw(name, data)
+  File "/home/ktshim/.local/lib/python3.12/site-packages/wandb/sdk/interface/interface.py", line 770, in publish_output_raw
+    o.timestamp.GetCurrentTime()
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 184, in GetCurrentTime
+    self.FromDatetime(datetime.datetime.now(tz=datetime.timezone.utc))
+  File "/home/ktshim/.local/lib/python3.12/site-packages/google/protobuf/internal/well_known_types.py", line 283, in FromDatetime
+    seconds = calendar.timegm(dt.utctimetuple())
+                              ^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: import of time halted; None in sys.modules

@@ -1,0 +1,60 @@
+_wandb:
+    value:
+        cli_version: 0.21.1
+        e:
+            bzj5gb9cumv6zfizwzfb22w4k0mr8dfs:
+                args:
+                    - --dataset
+                    - ultratool
+                    - --name
+                    - node
+                codePath: pool/graphtoken/main.py
+                codePathLocal: main.py
+                cpu_count: 64
+                cpu_count_logical: 64
+                cudaVersion: "12.4"
+                disk:
+                    /:
+                        total: "1853099020288"
+                        used: "1637143842816"
+                email: jshim31@gmail.com
+                executable: /opt/miniconda3/bin/python
+                gpu: NVIDIA H100 PCIe
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Hopper
+                      cudaCores: 14592
+                      memoryTotal: "85520809984"
+                      name: NVIDIA H100 PCIe
+                      uuid: GPU-b8582e73-5131-c305-1a97-e79018895d79
+                host: ubuntu
+                memory:
+                    total: "405511499776"
+                os: Linux-5.4.0-216-generic-x86_64-with-glibc2.31
+                program: /nas/home/ktshim/tool/pool/graphtoken/main.py
+                python: CPython 3.12.7
+                root: /nas/home/ktshim/tool/pool/graphtoken
+                startedAt: "2025-09-09T09:18:38.212328Z"
+                writerId: bzj5gb9cumv6zfizwzfb22w4k0mr8dfs
+        m: []
+        python_version: 3.12.7
+        t:
+            "1":
+                - 1
+                - 11
+                - 49
+                - 71
+                - 77
+            "2":
+                - 1
+                - 11
+                - 49
+                - 71
+                - 77
+            "3":
+                - 13
+            "4": 3.12.7
+            "5": 0.21.1
+            "6": 4.55.4
+            "12": 0.21.1
+            "13": linux-x86_64

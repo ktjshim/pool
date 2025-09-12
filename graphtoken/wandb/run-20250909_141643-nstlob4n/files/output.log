@@ -1,0 +1,124 @@
+= = = = = = = = = = = = = = = = = = = =
+## Starting Time: 09-09 13:16:45
+Namespace(dataset='huggingface', llm='Mistral-7B', llm_model_path='', seed=0, device='cuda:0', max_txt_length=512, max_ans_length=512, gnn_in_dim=1024, gnn_hidden_dim=1024, gnn_output_dim=4096, n_layers=2, gnn_type='SAGE', max_degree=300, num_epochs=2, batch_size=6, eval_batch_size=6, patience=2, lr=1e-05, wd=0.05, output_dir='output', grad_steps=4, name='centrality')
+
+[Training Data] # Chain Samples 1536 (51.20)
+[Data Split] # Train 3000  # Test 500
+# Train 2400   # Val 600   # Test 500
+Loading checkpoint shards: 100%|███████████████████| 3/3 [00:01<00:00,  2.15it/s]
+Finish loading pre-trained Mistral-7B model!
+Trainable params 12950528 || all params 7254682624 || trainable% 0.17851
+/nas/home/ktshim/tool/pool/graphtoken/../utils/datautil.py:24: RuntimeWarning: divide by zero encountered in power
+  d_inv = np.power(row_sum, -0.5).flatten()
+/nas/home/ktshim/tool/pool/graphtoken/../utils/datautil.py:19: UserWarning: torch.sparse.SparseTensor(indices, values, shape, *, device=) is deprecated.  Please use torch.sparse_coo_tensor(indices, values, shape, dtype=, device=). (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:653.)
+  return torch.sparse.FloatTensor(index, data, torch.Size(coo.shape))
+  0%|                                                    | 0/800 [00:00<?, ?it/s]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+  0%|                                          | 1/800 [00:39<8:42:00, 39.20s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|                                         | 2/800 [01:34<10:50:07, 48.88s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|▏                                         | 3/800 [01:35<5:56:27, 26.84s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|▏                                         | 4/800 [01:35<3:38:03, 16.44s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▎                                         | 5/800 [01:36<2:21:47, 10.70s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▎                                         | 6/800 [01:37<1:35:51,  7.24s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▎                                         | 7/800 [01:37<1:06:37,  5.04s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▍                                           | 8/800 [01:38<47:49,  3.62s/it]W0909 14:18:27.621000 3466507 torch/_dynamo/convert_frame.py:1016] [0/8] torch._dynamo hit config.recompile_limit (8)
+W0909 14:18:27.621000 3466507 torch/_dynamo/convert_frame.py:1016] [0/8]    function: 'forward' (/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:85)
+W0909 14:18:27.621000 3466507 torch/_dynamo/convert_frame.py:1016] [0/8]    last reason: 0/7: samples['request'][0] == '# TASK LIST #:\nToken Classification, Translation, Summarization, Question Answering, Conversational, Text Generation, Sentence Similarity, Tabular Classification, Object Detection, Image Classification, Image-to-Image, Image-to-Text, Text-to-Image, Text-to-Video, Visual Question Answering, Document Question Answering, Image Segmentation, Depth Estimation, Text-to-Speech, Automatic Speech Recognition, Audio-to-Audio, Audio Classification, Image Editing\n\n# GOAL #\nPlease understand the user\'s request and generate task steps and task invocation graph to solve it.\n\n# REQUIREMENT #\n1. The format must in a strict JSON format as {"task_steps": [ concrete step descriptions ], "task_nodes": [ a list of tasks to be executed in sequence to fulfill user\'s request ], "task_links": [{"source": "task name i", "target": "task name j"}]}\n2. The generated task steps and task nodes can resolve the given user request perfectly. Task name must be selected from TASK LIST.\n3. Task steps should strictly aligned with task nodes, and the number of task steps should be same with the task nodes.\n4. The task links should reflect the dependencies among task nodes, i.e. the order in which the APIs are invoked.\n\n\n# USER REQUEST #: I have a noisy audio file \'example.wav\' containing a lecture. I want to get a summarized text of it, then ask a question related to the lecture content based on an image \'example.jpg\', and finally, I want an answer to my question \'What is the main topic of the lecture?\'\nNow please generate your result in a strict JSON format:\n# RESULT #:'
+W0909 14:18:27.621000 3466507 torch/_dynamo/convert_frame.py:1016] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W0909 14:18:27.621000 3466507 torch/_dynamo/convert_frame.py:1016] [0/8] To diagnose recompilation issues, see https://pytorch.org/docs/main/torch.compiler_troubleshooting.html.
+/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py:81: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+ 25%|██████████▌                               | 200/800 [03:11<04:56,  2.02it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 200 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+now exiting InteractiveConsole...
+ 50%|█████████████████████                     | 400/800 [05:52<03:32,  1.88it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 400 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+now exiting InteractiveConsole...
+Epoch 0|2: Train Loss (Epoch Mean): 0.595196880735457
+Epoch: 0|2: Val Loss: 0.39251897245645523
+Saving checkpoint at epoch 0 to output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+ 75%|███████████████████████████████▌          | 600/800 [08:27<01:36,  2.07it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 200 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+now exiting InteractiveConsole...
+100%|██████████████████████████████████████████| 800/800 [10:29<00:00,  2.04it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 400 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+now exiting InteractiveConsole...
+Epoch 1|2: Train Loss (Epoch Mean): 0.3553774891793728
+Epoch: 1|2: Val Loss: 0.37375749424099924
+Saving checkpoint at epoch 1 to output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+/home/ktshim/.local/lib/python3.12/site-packages/torch/cuda/memory.py:491: FutureWarning: torch.cuda.reset_max_memory_allocated now calls torch.cuda.reset_peak_memory_stats, which resets /all/ peak memory stats.
+  warnings.warn(
+Path prediction/huggingface/Mistral-7B/GraphToken_SAGE.json
+Loading checkpoint from output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+                                                                                 Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  0%|                                                     | 0/84 [00:00<?, ?it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15629367 e pred
+[Test Error] Test-ID 32613208 e pred
+[Test Error] Test-ID 21012060 e pred
+  1%|▌                                            | 1/84 [00:20<27:45, 20.07s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 58719908 e pred
+[Test Error] Test-ID 33517826 e pred
+  2%|█                                            | 2/84 [00:40<27:36, 20.20s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 23156734 e pred
+[Test Error] Test-ID 32057897 e pred
+  4%|█▌                                           | 3/84 [01:00<27:17, 20.21s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 17695157 e pred
+  5%|██▏                                          | 4/84 [01:18<25:46, 19.34s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 16309918 e pred
+[Test Error] Test-ID 96651044 e pred
+[Test Error] Test-ID 26165291 e pred
+[Test Error] Test-ID 73648276 e pred
+  6%|██▋                                          | 5/84 [01:38<25:50, 19.62s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15941210 e pred
+[Test Error] Test-ID 26320836 e pred
+[Test Error] Test-ID 12876313 e pred
+[Test Error] Test-ID 99189811 e pred
+  7%|███▏                                         | 6/84 [01:58<25:45, 19.81s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 17346258 e pred
+[Test Error] Test-ID 23546976 e pred
+[Test Error] Test-ID 96341237 e pred
+Traceback (most recent call last):                | 7/84 [02:19<25:33, 19.92s/it]
+  File "/nas/home/ktshim/tool/pool/graphtoken/main.py", line 209, in <module>
+    id_list, predictions, requests = model.inference(batch, task_graph)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nas/home/ktshim/tool/pool/graphtoken/glm_node_centrality.py", line 166, in inference
+    outputs = self.model.generate(
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/transformers/generation/utils.py", line 2617, in generate
+    result = self._sample(
+             ^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/transformers/generation/utils.py", line 3589, in _sample
+    while self._has_unfinished_sequences(this_peer_finished, synced_gpus, device=input_ids.device):
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

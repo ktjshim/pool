@@ -1,0 +1,52 @@
+= = = = = = = = = = = = = = = = = = = =
+## Starting Time: 09-09 10:38:26
+Namespace(dataset='huggingface', llm='Mistral-7B', llm_model_path='', seed=0, device='cuda:0', max_txt_length=512, max_ans_length=512, gnn_in_dim=1024, gnn_hidden_dim=1024, gnn_output_dim=4096, n_layers=2, gnn_type='SAGE', num_epochs=2, batch_size=6, eval_batch_size=6, patience=2, lr=1e-05, wd=0.05, output_dir='output', grad_steps=4)
+
+[Training Data] # Chain Samples 1536 (51.20)
+[Data Split] # Train 3000  # Test 500
+# Train 2400   # Val 600   # Test 500
+Loading checkpoint shards: 100%|███████| 3/3 [00:01<00:00,  2.10it/s]
+Finish loading pre-trained Mistral-7B model!
+Trainable params 10492928 || all params 7252225024 || trainable% 0.14469
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/../utils/datautil.py:24: RuntimeWarning: divide by zero encountered in power
+  d_inv = np.power(row_sum, -0.5).flatten()
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/../utils/datautil.py:19: UserWarning: torch.sparse.SparseTensor(indices, values, shape, *, device=) is deprecated.  Please use torch.sparse_coo_tensor(indices, values, shape, dtype=, device=). (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:653.)
+  return torch.sparse.FloatTensor(index, data, torch.Size(coo.shape))
+  0%|                                        | 0/800 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/main.py", line 120, in <module>
+    loss, logits = model(batch, task_graph)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 375, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 736, in compile_wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1773, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1784, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py", line 81, in forward
+    requests = self.tokenizer(samples["request"], add_special_tokens=False)
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py", line 82, in torch_dynamo_resume_in_forward_at_81
+    labels = self.tokenizer(samples["label"], add_special_tokens=False)
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py", line 85, in torch_dynamo_resume_in_forward_at_82
+    eos_tokens = self.tokenizer(self.EOS, add_special_tokens=False)
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py", line 86, in torch_dynamo_resume_in_forward_at_85
+    eos_user_tokens = self.tokenizer(self.EOS_USER, add_special_tokens=False)
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py", line 87, in torch_dynamo_resume_in_forward_at_86
+    bos_embeds = self.word_embedding(self.tokenizer(self.BOS, add_special_tokens=False, return_tensors='pt').input_ids[0].to(self.device))
+  File "/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py", line 107, in torch_dynamo_resume_in_forward_at_87
+    label_input_ids = [self.self.IGNORE_INDEX] * (input_embeds.shape[0] - len(label_input_ids)) + label_input_ids
+                       ^^^^^^^^^
+  File "/home/ktshim/.local/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1962, in __getattr__
+    raise AttributeError(
+AttributeError: 'GraphToken' object has no attribute 'self'

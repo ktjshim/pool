@@ -1,0 +1,483 @@
+= = = = = = = = = = = = = = = = = = = =
+## Starting Time: 09-09 10:40:51
+Namespace(dataset='huggingface', llm='Mistral-7B', llm_model_path='', seed=0, device='cuda:0', max_txt_length=512, max_ans_length=512, gnn_in_dim=1024, gnn_hidden_dim=1024, gnn_output_dim=4096, n_layers=2, gnn_type='SAGE', num_epochs=2, batch_size=6, eval_batch_size=6, patience=2, lr=1e-05, wd=0.05, output_dir='output', grad_steps=4)
+
+[Training Data] # Chain Samples 1536 (51.20)
+[Data Split] # Train 3000  # Test 500
+# Train 2400   # Val 600   # Test 500
+Loading checkpoint shards: 100%|███████| 3/3 [00:01<00:00,  2.13it/s]
+Finish loading pre-trained Mistral-7B model!
+Trainable params 10492928 || all params 7252225024 || trainable% 0.14469
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/../utils/datautil.py:24: RuntimeWarning: divide by zero encountered in power
+  d_inv = np.power(row_sum, -0.5).flatten()
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/../utils/datautil.py:19: UserWarning: torch.sparse.SparseTensor(indices, values, shape, *, device=) is deprecated.  Please use torch.sparse_coo_tensor(indices, values, shape, dtype=, device=). (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:653.)
+  return torch.sparse.FloatTensor(index, data, torch.Size(coo.shape))
+  0%|                                        | 0/800 [00:00<?, ?it/s]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+  0%|                              | 1/800 [00:36<8:03:36, 36.32s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|                             | 2/800 [01:32<10:38:45, 48.03s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|                              | 3/800 [01:33<5:49:55, 26.34s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|▏                             | 4/800 [01:33<3:34:09, 16.14s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▏                             | 5/800 [01:34<2:19:03, 10.49s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▏                             | 6/800 [01:34<1:33:32,  7.07s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▎                             | 7/800 [01:34<1:04:57,  4.91s/it]/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▎                               | 8/800 [01:35<46:16,  3.51s/it]W0909 11:42:32.306000 3354620 torch/_dynamo/convert_frame.py:1016] [0/8] torch._dynamo hit config.recompile_limit (8)
+W0909 11:42:32.306000 3354620 torch/_dynamo/convert_frame.py:1016] [0/8]    function: 'forward' (/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:79)
+W0909 11:42:32.306000 3354620 torch/_dynamo/convert_frame.py:1016] [0/8]    last reason: 0/7: samples['request'][0] == '# TASK LIST #:\nToken Classification, Translation, Summarization, Question Answering, Conversational, Text Generation, Sentence Similarity, Tabular Classification, Object Detection, Image Classification, Image-to-Image, Image-to-Text, Text-to-Image, Text-to-Video, Visual Question Answering, Document Question Answering, Image Segmentation, Depth Estimation, Text-to-Speech, Automatic Speech Recognition, Audio-to-Audio, Audio Classification, Image Editing\n\n# GOAL #\nPlease understand the user\'s request and generate task steps and task invocation graph to solve it.\n\n# REQUIREMENT #\n1. The format must in a strict JSON format as {"task_steps": [ concrete step descriptions ], "task_nodes": [ a list of tasks to be executed in sequence to fulfill user\'s request ], "task_links": [{"source": "task name i", "target": "task name j"}]}\n2. The generated task steps and task nodes can resolve the given user request perfectly. Task name must be selected from TASK LIST.\n3. Task steps should strictly aligned with task nodes, and the number of task steps should be same with the task nodes.\n4. The task links should reflect the dependencies among task nodes, i.e. the order in which the APIs are invoked.\n\n\n# USER REQUEST #: Please help me classify tokens in the following text: \'Alice went to the store at 3pm yesterday. She bought a cake and six candles.\'\nNow please generate your result in a strict JSON format:\n# RESULT #:'
+W0909 11:42:32.306000 3354620 torch/_dynamo/convert_frame.py:1016] [0/8] To log all recompilation reasons, use TORCH_LOGS="recompiles".
+W0909 11:42:32.306000 3354620 torch/_dynamo/convert_frame.py:1016] [0/8] To diagnose recompilation issues, see https://pytorch.org/docs/main/torch.compiler_troubleshooting.html.
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+ 25%|███████▌                      | 200/800 [03:10<04:42,  2.13it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 200 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+torch.Size([6, 609, 32000])
+torch.Size([6, 609])
+'222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 Questionpackageer:1 name( a ve name _ and... T? for live c c run\' sat main h h h h? Mweet:EV : \n Prification\n Tokenlation, Wordmarization\n Text Answering, Sversationational Sum S Sum, Textentiment Sumity, Textular Comification\n Text Detection, Text Recification, Text GenerationText-Text Trans Text-to-Text, Text-to-Image, Text-to-Text, Textization Answering, Word Sum Answering, Document Questionmentation, Send,imation, S-to-Imageech, Textatic Textech Recognition, Text-to-Text, Text-ification, Audio-iting,\n# GenerateALITY:\n note the following\'s request and provide a accordingly accordingly output resultsocation\n accordingly help the.\n\n\n TheQ:: # #:#. The user of be the question order format. followstask":name": ["step steps ], "task_inv": [node list of nodes to be performed in order] solve the\'s request] "task_inv": aasource": "task_",", "target": "task j j"],\n#. The task task steps must task inv must be the user user request..\n steps and be unique based theASK LIST,\n3. The nodes and be follow with the inv in and task task of task nodes should be equal as the number nodes.\n\n. Task task inv should be the correct between tasks nodes. i.e., a source of which tasks tasksIs are invoked should\n\n\n\n TER REQUEST # Generate Convert a image from text following text: "The beautiful sunset oflooking sea\'\n the:\n as the..\n#,. text own image the text JSON format. {"{" {"P # {" {"{"JSONANT {" {"task_steps": ["Step 1: Generate the-to-Image tool to create an image based on the\'s text text."], "task_nodes": ["Text-to-Image"], "task_links": []}</s>\n'
+222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 Questionpackageer:1 name( a ve name _ and... T? for live c c run' sat main h h h h? Mweet:EV :
+ Prification
+ Tokenlation, Wordmarization
+ Text Answering, Sversationational Sum S Sum, Textentiment Sumity, Textular Comification
+ Text Detection, Text Recification, Text GenerationText-Text Trans Text-to-Text, Text-to-Image, Text-to-Text, Textization Answering, Word Sum Answering, Document Questionmentation, Send,imation, S-to-Imageech, Textatic Textech Recognition, Text-to-Text, Text-ification, Audio-iting,
+# GenerateALITY:
+ note the following's request and provide a accordingly accordingly output resultsocation
+ accordingly help the.
+
+
+ TheQ:: # #:#. The user of be the question order format. followstask":name": ["step steps ], "task_inv": [node list of nodes to be performed in order] solve the's request] "task_inv": aasource": "task_",", "target": "task j j"],
+#. The task task steps must task inv must be the user user request..
+ steps and be unique based theASK LIST,
+3. The nodes and be follow with the inv in and task task of task nodes should be equal as the number nodes.
+
+. Task task inv should be the correct between tasks nodes. i.e., a source of which tasks tasksIs are invoked should
+
+
+
+ TER REQUEST # Generate Convert a image from text following text: "The beautiful sunset oflooking sea'
+ the:
+ as the..
+#,. text own image the text JSON format. {"{" {"P # {" {"{"JSONANT {" {"task_steps": ["Step 1: Generate the-to-Image tool to create an image based on the's text text."], "task_nodes": ["Text-to-Image"], "task_links": []}</s>
+
+222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 Questionpackageer:1 name( a ve name _ and... T? for live c c run' sat main h h h h? Mweet:EV :
+ Prification
+ Tokenlation, Wordmarization
+ Text Answering, Sversationational Sum S Sum, Textentiment Sumity, Textular Comification
+ Text Detection, Text Recification, Text GenerationText-Text Trans Text-to-Text, Text-to-Image, Text-to-Text, Textization Answering, Word Sum Answering, Document Questionmentation, Send,imation, S-to-Imageech, Textatic Textech Recognition, Text-to-Text, Text-ification, Audio-iting,
+# GenerateALITY:
+ note the following's request and provide a accordingly accordingly output resultsocation
+ accordingly help the.
+
+
+ TheQ:: # #:#. The user of be the question order format. followstask":name": ["step steps ], "task_inv": [node list of nodes to be performed in order] solve the's request] "task_inv": aasource": "task_",", "target": "task j j"],
+#. The task task steps must task inv must be the user user request..
+ steps and be unique based theASK LIST,
+3. The nodes and be follow with the inv in and task task of task nodes should be equal as the number nodes.
+
+. Task task inv should be the correct between tasks nodes. i.e., a source of which tasks tasksIs are invoked should
+
+
+
+ TER REQUEST # Generate Convert a image from text following text: "The beautiful sunset oflooking sea'
+ the:
+ as the..
+#,. text own image the text JSON format. {"{" {"P # {" {"{"JSONANT {" {"task_steps": ["Step 1: Generate the-to-Image tool to create an image based on the's text text."], "task_nodes": ["Text-to-Image"], "task_links": []}
+
+# TASK LIST #:
+Token Classification, Translation, Summarization, Question Answering, Conversational, Text Generation, Sentence Similarity, Tabular Classification, Object Detection, Image Classification, Image-to-Image, Image-to-Text, Text-to-Image, Text-to-Video, Visual Question Answering, Document Question Answering, Image Segmentation, Depth Estimation, Text-to-Speech, Automatic Speech Recognition, Audio-to-Audio, Audio Classification, Image Editing
+
+# GOAL #
+Please understand the user's request and generate task steps and task invocation graph to solve it.
+
+# REQUIREMENT #
+1. The format must in a strict JSON format as {"task_steps": [ concrete step descriptions ], "task_nodes": [ a list of tasks to be executed in sequence to fulfill user's request ], "task_links": [{"source": "task name i", "target": "task name j"}]}
+2. The generated task steps and task nodes can resolve the given user request perfectly. Task name must be selected from TASK LIST.
+3. Task steps should strictly aligned with task nodes, and the number of task steps should be same with the task nodes.
+4. The task links should reflect the dependencies among task nodes, i.e. the order in which the APIs are invoked.
+
+
+# USER REQUEST #: Create an image from the following text: 'A beautiful sunset over the mountains'. Use example.jpg as output file.
+Now please generate your result in a strict JSON format:
+# RESULT #:
+{"task_steps": ["Step 1: Use Text-to-Image tool to generate an image based on user's input text."], "task_nodes": ["Text-to-Image"], "task_links": []}
+
+now exiting InteractiveConsole...
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+ 50%|███████████████               | 400/800 [08:13<03:27,  1.92it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 400 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+now exiting InteractiveConsole...
+Epoch 0|2: Train Loss (Epoch Mean): 0.49051106300204994
+Epoch: 0|2: Val Loss: 0.3644857510924339
+Saving checkpoint at epoch 0 to output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+ 75%|██████████████████████▌       | 600/800 [10:44<01:35,  2.09it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 200 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+
+now exiting InteractiveConsole...
+100%|██████████████████████████████| 800/800 [12:55<00:00,  2.02it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 400 ---
+Python 3.12.7 | packaged by Anaconda, Inc. | (main, Oct  4 2024, 13:27:36) [GCC 11.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222 Questionpackageer:1 Tow( a various Electric _ Sat Labourelandlage thro liveBY firstifer' hemplumeume bid intersection draft33:AB
+izeifier; lation, Wordmarize, Text answeringswering, Textversationational Agent Text Sum, andentiment Expity, andular Sumification, and Detection, and Classification, Text GenerationText-Text, Text Transto-Text, Text-to-Spe, Text Sumto-Spe, Textization Answering, and Sum Answering, and Captionmentation, andthoughtimation, and Sumto-Speech, andatic Sumech Recognition, and Transto-Text, Text-ification, Text Segiting,
+
+ :: T
+ use the following inputs': provide a instructions to explan outputocation code accordingly help it.
+
+
+ StepQ::: # A#. User user of be the specific format format. followstask":name": [...{" steps ], "task_inv": [node list of nodes], be performed in the], complete the requests request], "task_inv": aasource": tasktask_",", "target": "task j j"],
+#. The user JSON steps and task inv should be the user user request..
+s can be a from theASK LIST.
+#. The inv and be follow with the nodes in and task order of task nodes must match equal as the number nodes.
+#. The task inv should be the dependencies between the nodes. and.
+., the output of which tasks tasksIs executed executed.
+
+
+# ExampleER REQUEST
+ Generate What asks What want to in a following of a philosophy
+
+ you help a brief history?
+#, generate a response in a convers JSON format as {"{" {"ULT # {" {"{"json` {" {"task_steps": ["Step 1: Generate a textational response based the user user'." "task_nodes": ["Conversational"], "task_links": []}�
+# TASK LIST #:
+Token Classification, Translation, Summarization, Question Answering, Conversational, Text Generation, Sentence Similarity, Tabular Classification, Object Detection, Image Classification, Image-to-Image, Image-to-Text, Text-to-Image, Text-to-Video, Visual Question Answering, Document Question Answering, Image Segmentation, Depth Estimation, Text-to-Speech, Automatic Speech Recognition, Audio-to-Audio, Audio Classification, Image Editing
+
+# GOAL #
+Please understand the user's request and generate task steps and task invocation graph to solve it.
+
+# REQUIREMENT #
+1. The format must in a strict JSON format as {"task_steps": [ concrete step descriptions ], "task_nodes": [ a list of tasks to be executed in sequence to fulfill user's request ], "task_links": [{"source": "task name i", "target": "task name j"}]}
+2. The generated task steps and task nodes can resolve the given user request perfectly. Task name must be selected from TASK LIST.
+3. Task steps should strictly aligned with task nodes, and the number of task steps should be same with the task nodes.
+4. The task links should reflect the dependencies among task nodes, i.e. the order in which the APIs are invoked.
+
+
+# USER REQUEST #: User: I need assistance with the history of Greek philosophy. Can you provide a brief explanation?
+Now please generate your result in a strict JSON format:
+# RESULT #:
+{"task_steps": ["Step 1: Generate a conversational response to a given user query"], "task_nodes": ["Conversational"], "task_links": []}
+
+now exiting InteractiveConsole...
+Epoch 1|2: Train Loss (Epoch Mean): 0.31872277081012723
+/nas/home/ktshim/tool/PoolGraphToken/graphtoken/glm_node.py:75: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+Epoch: 1|2: Val Loss: 0.32781006664037704
+Saving checkpoint at epoch 1 to output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+/home/ktshim/.local/lib/python3.12/site-packages/torch/cuda/memory.py:491: FutureWarning: torch.cuda.reset_max_memory_allocated now calls torch.cuda.reset_peak_memory_stats, which resets /all/ peak memory stats.
+  warnings.warn(
+Path prediction/huggingface/Mistral-7B/GraphToken_SAGE.json
+Loading checkpoint from output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+                                                         Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  0%|                             | 0/84 [00:00<?, ?it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15629367 e pred
+[Test Error] Test-ID 32613208 e pred
+[Test Error] Test-ID 21012060 e pred
+  1%|▎                    | 1/84 [00:20<28:39, 20.72s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 58719908 e pred
+[Test Error] Test-ID 26514729 e pred
+  2%|▌                    | 2/84 [00:41<28:02, 20.52s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 32057897 e pred
+  4%|▊                    | 3/84 [01:01<27:23, 20.29s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 17695157 e pred
+[Test Error] Test-ID 28688470 e pred
+  5%|█                    | 4/84 [01:21<27:05, 20.31s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 96651044 e pred
+[Test Error] Test-ID 26165291 e pred
+  6%|█▎                   | 5/84 [01:40<26:14, 19.93s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 26320836 e pred
+[Test Error] Test-ID 12876313 e pred
+[Test Error] Test-ID 68780357 e pred
+[Test Error] Test-ID 99189811 e pred
+  7%|█▌                   | 6/84 [02:01<26:04, 20.05s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 17346258 e pred
+[Test Error] Test-ID 23546976 e pred
+[Test Error] Test-ID 96341237 e pred
+  8%|█▊                   | 7/84 [02:21<25:49, 20.12s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 20666150 e pred
+[Test Error] Test-ID 33081245 e pred
+[Test Error] Test-ID 64221637 e pred
+ 10%|██                   | 8/84 [02:41<25:41, 20.29s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 11%|██▎                  | 9/84 [02:59<24:23, 19.51s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 50089396 e pred
+ 12%|██▍                 | 10/84 [03:20<24:23, 19.78s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 16278219 e pred
+[Test Error] Test-ID 30327512 e pred
+[Test Error] Test-ID 24781552 e pred
+ 13%|██▌                 | 11/84 [03:40<24:18, 19.98s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 14278121 e pred
+[Test Error] Test-ID 63538844 e pred
+[Test Error] Test-ID 25605833 e pred
+ 14%|██▊                 | 12/84 [04:00<24:06, 20.10s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 24425303 e pred
+[Test Error] Test-ID 13351081 e pred
+[Test Error] Test-ID 17171654 e pred
+ 15%|███                 | 13/84 [04:21<23:55, 20.22s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 13171761 e pred
+[Test Error] Test-ID 20615183 e pred
+ 17%|███▎                | 14/84 [04:41<23:37, 20.26s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 68419360 e pred
+[Test Error] Test-ID 32236593 e pred
+[Test Error] Test-ID 23046980 e pred
+[Test Error] Test-ID 93261718 e pred
+ 18%|███▌                | 15/84 [05:02<23:20, 20.30s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 28407458 e pred
+[Test Error] Test-ID 11357103 e pred
+[Test Error] Test-ID 88374923 e pred
+ 19%|███▊                | 16/84 [05:22<23:02, 20.34s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15905758 e pred
+ 20%|████                | 17/84 [05:43<22:45, 20.39s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15165036 e pred
+[Test Error] Test-ID 27315800 e pred
+ 21%|████▎               | 18/84 [06:03<22:24, 20.37s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 17246614 e pred
+[Test Error] Test-ID 13258975 e pred
+[Test Error] Test-ID 32951041 e pred
+ 23%|████▌               | 19/84 [06:23<22:00, 20.32s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 29460290 e pred
+ 24%|████▊               | 20/84 [06:44<21:44, 20.38s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 25%|█████               | 21/84 [07:02<20:53, 19.89s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 31905835 e pred
+[Test Error] Test-ID 12965513 e pred
+[Test Error] Test-ID 27945683 e pred
+ 26%|█████▏              | 22/84 [07:23<20:42, 20.03s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 24031668 e pred
+[Test Error] Test-ID 29178445 e pred
+[Test Error] Test-ID 30476945 e pred
+[Test Error] Test-ID 30422962 e pred
+ 27%|█████▍              | 23/84 [07:43<20:30, 20.17s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 32122597 e pred
+[Test Error] Test-ID 95882967 e pred
+[Test Error] Test-ID 32707898 e pred
+ 29%|█████▋              | 24/84 [08:04<20:12, 20.21s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 14600856 e pred
+[Test Error] Test-ID 16183062 e pred
+ 30%|█████▉              | 25/84 [08:24<19:54, 20.24s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15716659 e pred
+[Test Error] Test-ID 56678487 e pred
+[Test Error] Test-ID 10201211 e pred
+ 31%|██████▏             | 26/84 [08:44<19:35, 20.27s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 56777184 e pred
+[Test Error] Test-ID 28070748 e pred
+[Test Error] Test-ID 31928345 e pred
+ 32%|██████▍             | 27/84 [09:05<19:16, 20.29s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 75501770 e pred
+[Test Error] Test-ID 89914283 e pred
+ 33%|██████▋             | 28/84 [09:25<18:59, 20.34s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 16266459 e pred
+[Test Error] Test-ID 82679026 e pred
+[Test Error] Test-ID 24124949 e pred
+ 35%|██████▉             | 29/84 [09:46<18:57, 20.68s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 22613571 e pred
+ 36%|███████▏            | 30/84 [10:07<18:29, 20.55s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 10159776 e pred
+[Test Error] Test-ID 25132217 e pred
+[Test Error] Test-ID 18267263 e pred
+[Test Error] Test-ID 16388049 e pred
+ 37%|███████▍            | 31/84 [10:27<18:05, 20.47s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 19431208 e pred
+[Test Error] Test-ID 87327927 e pred
+ 38%|███████▌            | 32/84 [10:47<17:43, 20.45s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 31719847 e pred
+[Test Error] Test-ID 72002913 e pred
+ 39%|███████▊            | 33/84 [11:08<17:22, 20.44s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 40%|████████            | 34/84 [11:27<16:38, 19.98s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 14575169 e pred
+[Test Error] Test-ID 16947728 e pred
+[Test Error] Test-ID 28823138 e pred
+ 42%|████████▎           | 35/84 [11:47<16:23, 20.08s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 94814619 e pred
+[Test Error] Test-ID 29759828 e pred
+ 43%|████████▌           | 36/84 [12:07<16:05, 20.12s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 59401546 e pred
+[Test Error] Test-ID 23487584 e pred
+ 44%|████████▊           | 37/84 [12:28<15:49, 20.21s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 83888896 e pred
+[Test Error] Test-ID 28555836 e pred
+ 45%|█████████           | 38/84 [12:48<15:32, 20.26s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 84848422 e pred
+[Test Error] Test-ID 13507520 e pred
+[Test Error] Test-ID 33636840 e pred
+[Test Error] Test-ID 10313723 e pred
+[Test Error] Test-ID 10854559 e pred
+ 46%|█████████▎          | 39/84 [13:08<15:13, 20.31s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 16784865 e pred
+[Test Error] Test-ID 11010352 e pred
+ 48%|█████████▌          | 40/84 [13:27<14:26, 19.68s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 32525760 e pred
+[Test Error] Test-ID 79733558 e pred
+[Test Error] Test-ID 30990439 e pred
+ 49%|█████████▊          | 41/84 [13:47<14:15, 19.89s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 20881001 e pred
+[Test Error] Test-ID 83169152 e pred
+ 50%|██████████          | 42/84 [14:07<14:02, 20.05s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 23152737 e pred
+[Test Error] Test-ID 17438641 e pred
+ 51%|██████████▏         | 43/84 [14:28<13:48, 20.20s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 20310117 e pred
+[Test Error] Test-ID 11253911 e pred
+[Test Error] Test-ID 24217351 e pred
+ 52%|██████████▍         | 44/84 [14:48<13:30, 20.27s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 30752221 e pred
+[Test Error] Test-ID 30644541 e pred
+ 54%|██████████▋         | 45/84 [15:09<13:11, 20.31s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 86004399 e pred
+[Test Error] Test-ID 10769461 e pred
+[Test Error] Test-ID 54436848 e pred
+[Test Error] Test-ID 10330022 e pred
+ 55%|██████████▉         | 46/84 [15:29<12:51, 20.31s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 26422351 e pred
+[Test Error] Test-ID 16167259 e pred
+ 56%|███████████▏        | 47/84 [15:50<12:32, 20.33s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 49411079 e pred
+[Test Error] Test-ID 29037302 e pred
+ 57%|███████████▍        | 48/84 [16:10<12:12, 20.36s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 47678424 e pred
+[Test Error] Test-ID 29732540 e pred
+[Test Error] Test-ID 31356910 e pred
+ 58%|███████████▋        | 49/84 [16:30<11:52, 20.35s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15074132 e pred
+[Test Error] Test-ID 49173717 e pred
+[Test Error] Test-ID 30829675 e pred
+ 60%|███████████▉        | 50/84 [16:51<11:31, 20.34s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 36137018 e pred
+[Test Error] Test-ID 10433673 e pred
+[Test Error] Test-ID 16005844 e pred
+[Test Error] Test-ID 13925917 e pred
+[Test Error] Test-ID 28145763 e pred
+ 61%|████████████▏       | 51/84 [17:11<11:11, 20.36s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15248928 e pred
+[Test Error] Test-ID 24162945 e pred
+[Test Error] Test-ID 17025449 e pred
+ 62%|████████████▍       | 52/84 [17:31<10:52, 20.39s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 63%|████████████▌       | 53/84 [17:50<10:10, 19.69s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 22714115 e pred
+[Test Error] Test-ID 20638363 e pred
+ 64%|████████████▊       | 54/84 [18:10<09:56, 19.89s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 25303450 e pred
+[Test Error] Test-ID 12612371 e pred
+[Test Error] Test-ID 20507866 e pred
+ 65%|█████████████       | 55/84 [18:30<09:42, 20.08s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 33830770 e pred
+ 67%|█████████████▎      | 56/84 [18:51<09:24, 20.16s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 21660053 e pred
+[Test Error] Test-ID 13523160 e pred
+[Test Error] Test-ID 27940970 e pred
+[Test Error] Test-ID 40037320 e pred
+[Test Error] Test-ID 55144102 e pred
+ 68%|█████████████▌      | 57/84 [19:11<09:05, 20.22s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 95335826 e pred
+[Test Error] Test-ID 13842784 e pred
+[Test Error] Test-ID 20912596 e pred
+ 69%|█████████████▊      | 58/84 [19:31<08:46, 20.25s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 70%|██████████████      | 59/84 [19:51<08:21, 20.05s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 93455984 e pred
+[Test Error] Test-ID 21368313 e pred
+ 71%|██████████████▎     | 60/84 [20:11<08:03, 20.16s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 33648020 e pred
+ 73%|██████████████▌     | 61/84 [20:32<07:44, 20.22s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 40305080 e pred
+[Test Error] Test-ID 13836608 e pred
+[Test Error] Test-ID 80969124 e pred
+[Test Error] Test-ID 18631304 e pred
+ 74%|██████████████▊     | 62/84 [20:52<07:26, 20.28s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 75%|███████████████     | 63/84 [21:09<06:45, 19.32s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 22681406 e pred
+[Test Error] Test-ID 15141261 e pred
+[Test Error] Test-ID 78444204 e pred
+[Test Error] Test-ID 82360299 e pred
+ 76%|███████████████▏    | 64/84 [21:30<06:33, 19.66s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 20142480 e pred
+[Test Error] Test-ID 20889516 e pred
+[Test Error] Test-ID 20759722 e pred
+ 77%|███████████████▍    | 65/84 [21:50<06:17, 19.84s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 11862987 e pred
+[Test Error] Test-ID 29974736 e pred
+[Test Error] Test-ID 23875699 e pred
+ 79%|███████████████▋    | 66/84 [22:10<05:59, 19.99s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 18333396 e pred
+ 80%|███████████████▉    | 67/84 [22:30<05:38, 19.93s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 10028057 e pred
+[Test Error] Test-ID 22539900 e pred
+[Test Error] Test-ID 31242326 e pred
+[Test Error] Test-ID 19693213 e pred
+[Test Error] Test-ID 19090704 e pred
+ 81%|████████████████▏   | 68/84 [22:51<05:24, 20.30s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 26271521 e pred
+[Test Error] Test-ID 33997496 e pred
+[Test Error] Test-ID 89053569 e pred
+ 82%|████████████████▍   | 69/84 [23:12<05:04, 20.28s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 11849486 e pred
+ 83%|████████████████▋   | 70/84 [23:30<04:37, 19.84s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 25124574 e pred
+[Test Error] Test-ID 26653087 e pred
+[Test Error] Test-ID 78537707 e pred
+[Test Error] Test-ID 13268295 e pred
+ 85%|████████████████▉   | 71/84 [23:51<04:19, 19.99s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 33463449 e pred
+[Test Error] Test-ID 73933244 e pred
+[Test Error] Test-ID 25847116 e pred
+ 86%|█████████████████▏  | 72/84 [24:11<04:01, 20.09s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 87%|█████████████████▍  | 73/84 [24:31<03:41, 20.13s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 27846910 e pred
+ 88%|█████████████████▌  | 74/84 [24:52<03:21, 20.18s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 14310314 e pred
+ 89%|█████████████████▊  | 75/84 [25:12<03:02, 20.22s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 83219429 e pred
+[Test Error] Test-ID 59848791 e pred
+[Test Error] Test-ID 33423665 e pred
+[Test Error] Test-ID 89994246 e pred
+ 90%|██████████████████  | 76/84 [25:32<02:42, 20.28s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 28028547 e pred
+[Test Error] Test-ID 41866354 e pred
+[Test Error] Test-ID 75500481 e pred
+[Test Error] Test-ID 12348661 e pred
+ 92%|██████████████████▎ | 77/84 [25:53<02:22, 20.32s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 30280625 e pred
+[Test Error] Test-ID 58602552 e pred
+[Test Error] Test-ID 25606667 e pred
+[Test Error] Test-ID 87101358 e pred
+[Test Error] Test-ID 22077941 e pred
+ 93%|██████████████████▌ | 78/84 [26:13<02:02, 20.39s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 26076670 e pred
+[Test Error] Test-ID 20593215 e pred
+ 94%|██████████████████▊ | 79/84 [26:33<01:41, 20.24s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 32403987 e pred
+[Test Error] Test-ID 37524177 e pred
+[Test Error] Test-ID 19338535 e pred
+[Test Error] Test-ID 21511092 e pred
+[Test Error] Test-ID 44885018 e pred
+ 95%|███████████████████ | 80/84 [26:54<01:21, 20.39s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 27912137 e pred
+ 96%|███████████████████▎| 81/84 [27:14<01:01, 20.34s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 14071691 e pred
+ 98%|███████████████████▌| 82/84 [27:34<00:40, 20.32s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 27793145 e pred
+[Test Error] Test-ID 92909909 e pred
+[Test Error] Test-ID 47607836 e pred
+ 99%|███████████████████▊| 83/84 [27:55<00:20, 20.31s/it]
+[Test Error] Test-ID 12657394 e pred
+100%|████████████████████| 84/84 [28:13<00:00, 19.71s/it]
+
+## Finishing Time: 09-09 11:24:14
+= = = = = = = = = = = = = = = = = = = =
+Done!
