@@ -1,0 +1,156 @@
+= = = = = = = = = = = = = = = = = = = =
+## Starting Time: 09-12 19:38:39
+Namespace(dataset='huggingface', llm='Mistral-7B', llm_model_path='', seed=0, device='cuda:0', max_txt_length=512, max_ans_length=512, gnn_in_dim=1024, gnn_hidden_dim=1024, gnn_output_dim=4096, n_layers=2, gnn_type='SAGE', max_degree=270, max_nodes=270, num_epochs=2, batch_size=6, eval_batch_size=6, patience=2, lr=1e-05, wd=0.05, output_dir='output', grad_steps=4, name='graph_fp32')
+
+[Training Data] # Chain Samples 1536 (51.20)
+[Data Split] # Train 3000  # Test 500
+# Train 2400   # Val 600   # Test 500
+Loading checkpoint shards: 100%|████████████████████████████████████████| 3/3 [00:01<00:00,  2.12it/s]
+Finish loading pre-trained Mistral-7B model!
+Trainable params 10492928 || all params 7252225024 || trainable% 0.14469
+/nas/home/ktshim/tool/pool/graphtoken/../utils/datautil.py:24: RuntimeWarning: divide by zero encountered in power
+  d_inv = np.power(row_sum, -0.5).flatten()
+/nas/home/ktshim/tool/pool/graphtoken/../utils/datautil.py:19: UserWarning: torch.sparse.SparseTensor(indices, values, shape, *, device=) is deprecated.  Please use torch.sparse_coo_tensor(indices, values, shape, dtype=, device=). (Triggered internally at /pytorch/torch/csrc/utils/tensor_new.cpp:654.)
+  return torch.sparse.FloatTensor(index, data, torch.Size(coo.shape))
+  0%|                                                                         | 0/800 [00:00<?, ?it/s]/home/ktshim/anaconda3/envs/tool/lib/python3.9/site-packages/torch/_inductor/compile_fx.py:236: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+Exception ignored in: <function ExactWeakKeyDictionary.__setitem__.<locals>.<lambda> at 0x7fd544e9ec10>
+Traceback (most recent call last):
+  File "/home/ktshim/anaconda3/envs/tool/lib/python3.9/site-packages/torch/_dynamo/utils.py", line 908, in <lambda>
+    self.refs[idx] = weakref.ref(key, lambda ref: self._remove_id(idx))
+KeyboardInterrupt:
+  0%|                                                              | 1/800 [01:02<13:54:22, 62.66s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  0%|▏                                                             | 2/800 [02:09<14:28:48, 65.32s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  1%|▋                                                              | 8/800 [03:19<5:40:15, 25.78s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+  2%|█                                                             | 14/800 [04:28<5:07:26, 23.47s/it]/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+ 25%|███████████████▊                                               | 200/800 [05:55<04:29,  2.22it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 200 ---
+ 50%|███████████████████████████████▌                               | 400/800 [07:36<03:17,  2.02it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 400 ---
+Epoch 0|2: Train Loss (Epoch Mean): 0.429670775718987
+/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+/nas/home/ktshim/tool/pool/graphtoken/glm_graph.py:78: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  return torch.cuda.amp.autocast(dtype=dtype)
+Epoch: 0|2: Val Loss: 0.306069668084383
+Saving checkpoint at epoch 0 to output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+ 75%|███████████████████████████████████████████████▎               | 600/800 [10:59<01:34,  2.12it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 200 ---
+100%|███████████████████████████████████████████████████████████████| 800/800 [12:42<00:00,  2.20it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+
+--- Running Inference Check at Step 400 ---
+Epoch 1|2: Train Loss (Epoch Mean): 0.29330316118896005
+Epoch: 1|2: Val Loss: 0.28557920768857004
+Saving checkpoint at epoch 1 to output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+/home/ktshim/anaconda3/envs/tool/lib/python3.9/site-packages/torch/cuda/memory.py:489: FutureWarning: torch.cuda.reset_max_memory_allocated now calls torch.cuda.reset_peak_memory_stats, which resets /all/ peak memory stats.
+  warnings.warn(
+Loading checkpoint from output/huggingface/Mistral-7B/SAGE_Epoch2_checkpoint_best.pth
+                                                                                                      Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  0%|                                                                          | 0/84 [00:00<?, ?it/s]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  1%|▊                                                                 | 1/84 [00:11<15:32, 11.23s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  2%|█▌                                                                | 2/84 [00:23<16:00, 11.71s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  4%|██▎                                                               | 3/84 [00:37<17:39, 13.08s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 92123547 e pred
+  5%|███▏                                                              | 4/84 [00:58<21:12, 15.90s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  6%|███▉                                                              | 5/84 [01:05<16:52, 12.82s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  7%|████▋                                                             | 6/84 [01:18<16:36, 12.77s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+  8%|█████▌                                                            | 7/84 [01:28<15:14, 11.88s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 10%|██████▎                                                           | 8/84 [01:36<13:35, 10.73s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 11%|███████                                                           | 9/84 [01:42<11:39,  9.33s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 12%|███████▋                                                         | 10/84 [01:52<11:37,  9.43s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 13%|████████▌                                                        | 11/84 [02:02<11:34,  9.51s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 14%|█████████▎                                                       | 12/84 [02:11<11:27,  9.55s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 15%|██████████                                                       | 13/84 [02:30<14:37, 12.36s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 17%|██████████▊                                                      | 14/84 [02:43<14:43, 12.63s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 18%|███████████▌                                                     | 15/84 [02:55<14:01, 12.19s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 19%|████████████▍                                                    | 16/84 [03:06<13:36, 12.01s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 20%|█████████████▏                                                   | 17/84 [03:18<13:22, 11.98s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 21%|█████████████▉                                                   | 18/84 [03:31<13:22, 12.16s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 23%|██████████████▋                                                  | 19/84 [03:40<12:21, 11.41s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 24%|███████████████▍                                                 | 20/84 [03:52<12:18, 11.54s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 25%|████████████████▎                                                | 21/84 [04:00<10:50, 10.33s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 26%|█████████████████                                                | 22/84 [04:09<10:20, 10.01s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 27%|█████████████████▊                                               | 23/84 [04:23<11:22, 11.19s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 29%|██████████████████▌                                              | 24/84 [04:34<11:07, 11.13s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 30%|███████████████████▎                                             | 25/84 [04:43<10:26, 10.62s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 31%|████████████████████                                             | 26/84 [04:58<11:28, 11.87s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 32%|████████████████████▉                                            | 27/84 [05:13<12:08, 12.78s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 33%|█████████████████████▋                                           | 28/84 [05:24<11:24, 12.22s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 35%|██████████████████████▍                                          | 29/84 [05:40<12:10, 13.29s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 36%|███████████████████████▏                                         | 30/84 [05:50<11:02, 12.27s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 37%|███████████████████████▉                                         | 31/84 [06:02<10:46, 12.19s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 38%|████████████████████████▊                                        | 32/84 [06:12<09:59, 11.53s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 39%|█████████████████████████▌                                       | 33/84 [06:25<10:14, 12.05s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 40%|██████████████████████████▎                                      | 34/84 [06:34<09:26, 11.33s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 42%|███████████████████████████                                      | 35/84 [06:47<09:28, 11.60s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 43%|███████████████████████████▊                                     | 36/84 [06:55<08:30, 10.63s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 44%|████████████████████████████▋                                    | 37/84 [07:05<08:13, 10.50s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 45%|█████████████████████████████▍                                   | 38/84 [07:15<07:50, 10.23s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 46%|██████████████████████████████▏                                  | 39/84 [07:30<08:44, 11.65s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 48%|██████████████████████████████▉                                  | 40/84 [07:39<07:59, 10.89s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 49%|███████████████████████████████▋                                 | 41/84 [07:52<08:11, 11.43s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 50%|████████████████████████████████▌                                | 42/84 [08:05<08:25, 12.04s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 51%|█████████████████████████████████▎                               | 43/84 [08:21<09:02, 13.23s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 52%|██████████████████████████████████                               | 44/84 [08:31<08:06, 12.17s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 54%|██████████████████████████████████▊                              | 45/84 [08:40<07:21, 11.31s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 55%|███████████████████████████████████▌                             | 46/84 [08:53<07:32, 11.91s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 56%|████████████████████████████████████▎                            | 47/84 [09:07<07:44, 12.55s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 57%|█████████████████████████████████████▏                           | 48/84 [09:21<07:38, 12.74s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 58%|█████████████████████████████████████▉                           | 49/84 [09:34<07:30, 12.88s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 60%|██████████████████████████████████████▋                          | 50/84 [09:43<06:44, 11.89s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 61%|███████████████████████████████████████▍                         | 51/84 [10:02<07:40, 13.96s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 62%|████████████████████████████████████████▏                        | 52/84 [10:17<07:34, 14.21s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 63%|█████████████████████████████████████████                        | 53/84 [10:26<06:30, 12.58s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 64%|█████████████████████████████████████████▊                       | 54/84 [10:40<06:30, 13.02s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 65%|██████████████████████████████████████████▌                      | 55/84 [10:52<06:11, 12.81s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 67%|███████████████████████████████████████████▎                     | 56/84 [11:00<05:21, 11.47s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 68%|████████████████████████████████████████████                     | 57/84 [11:11<04:59, 11.08s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 69%|████████████████████████████████████████████▉                    | 58/84 [11:23<04:55, 11.38s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 70%|█████████████████████████████████████████████▋                   | 59/84 [11:31<04:23, 10.54s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 71%|██████████████████████████████████████████████▍                  | 60/84 [11:45<04:37, 11.55s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 73%|███████████████████████████████████████████████▏                 | 61/84 [11:54<04:04, 10.62s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 74%|███████████████████████████████████████████████▉                 | 62/84 [12:05<03:57, 10.78s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 75%|████████████████████████████████████████████████▊                | 63/84 [12:12<03:23,  9.68s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 15141261 e pred
+ 76%|█████████████████████████████████████████████████▌               | 64/84 [12:32<04:17, 12.87s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 77%|██████████████████████████████████████████████████▎              | 65/84 [12:44<03:56, 12.44s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+[Test Error] Test-ID 11862987 e pred
+ 79%|███████████████████████████████████████████████████              | 66/84 [13:04<04:25, 14.75s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 80%|███████████████████████████████████████████████████▊             | 67/84 [13:12<03:36, 12.72s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 81%|████████████████████████████████████████████████████▌            | 68/84 [13:21<03:06, 11.69s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 82%|█████████████████████████████████████████████████████▍           | 69/84 [13:32<02:51, 11.41s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 83%|██████████████████████████████████████████████████████▏          | 70/84 [13:40<02:25, 10.40s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 85%|██████████████████████████████████████████████████████▉          | 71/84 [13:49<02:11, 10.12s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 86%|███████████████████████████████████████████████████████▋         | 72/84 [14:00<02:02, 10.17s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 87%|████████████████████████████████████████████████████████▍        | 73/84 [14:08<01:47,  9.74s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 88%|█████████████████████████████████████████████████████████▎       | 74/84 [14:17<01:33,  9.33s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 89%|██████████████████████████████████████████████████████████       | 75/84 [14:28<01:28,  9.80s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 90%|██████████████████████████████████████████████████████████▊      | 76/84 [14:42<01:29, 11.14s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 92%|███████████████████████████████████████████████████████████▌     | 77/84 [14:51<01:13, 10.54s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 93%|████████████████████████████████████████████████████████████▎    | 78/84 [15:05<01:08, 11.50s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 94%|█████████████████████████████████████████████████████████████▏   | 79/84 [15:14<00:53, 10.79s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 95%|█████████████████████████████████████████████████████████████▉   | 80/84 [15:33<00:53, 13.35s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 96%|██████████████████████████████████████████████████████████████▋  | 81/84 [15:40<00:34, 11.40s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 98%|███████████████████████████████████████████████████████████████▍ | 82/84 [15:50<00:21, 10.84s/it]Setting `pad_token_id` to `eos_token_id`:2 for open-end generation.
+ 99%|████████████████████████████████████████████████████████████████▏| 83/84 [16:01<00:11, 11.04s/it]
+100%|█████████████████████████████████████████████████████████████████| 84/84 [16:09<00:00, 10.16s/it]
+
+## Finishing Time: 09-12 20:08:07
+= = = = = = = = = = = = = = = = = = = =
+Done!
