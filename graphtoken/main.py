@@ -88,8 +88,8 @@ if __name__ == "__main__":
     
     if args.shot == "0shot":
         plan_dataset = TaskPlanningDataset(args.dataset)
-    elif args.shot == "3shot":
-        plan_dataset = TaskPlanningDatasetKshot(args.dataset, k=3)
+    elif args.shot == "1shot":
+        plan_dataset = TaskPlanningDatasetKshot(args.dataset, k_shot=1)
     else:
         NotImplementedError
     
