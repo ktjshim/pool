@@ -5,7 +5,7 @@ from gnn import GNNEncoder
 import contextlib
 
 
-class GraphToken(torch.nn.Module):
+class GraphTokenCentrality(torch.nn.Module):
     def __init__(self, args, **kwargs):
         super().__init__()
     
@@ -27,8 +27,8 @@ class GraphToken(torch.nn.Module):
             self.EOS = "<end_of_turn>"
         
         else:
-            self.BOS = '<s> [INST] '
-            self.EOS_USER = '[/INST] '
+            self.BOS = '<s>[INST]'
+            self.EOS_USER = '[/INST]'
             self.EOS = '</s>'
             self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
             
@@ -56,6 +56,7 @@ class GraphToken(torch.nn.Module):
             output_dim=args.gnn_output_dim, 
             n_layers=args.n_layers, 
             gnn_type=args.gnn_type).to(self.device)
+        
         
         self.in_degree_encoder = nn.Embedding(args.max_degree, args.gnn_output_dim, padding_idx=0).to(self.device)
         self.out_degree_encoder = nn.Embedding(args.max_degree, args.gnn_output_dim, padding_idx=0).to(self.device)
@@ -176,6 +177,8 @@ class GraphToken(torch.nn.Module):
 
         return samples["id"], pred, samples["request"]
    
+
+
     def print_trainable_params(self):
         trainable_params = 0
         all_param = 0 

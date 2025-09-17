@@ -114,8 +114,16 @@ def evaluate(dataset, llm_name, method):
         print(f"Prediction file not found, skipping: {pred_filename}")
         return 
 
-    gt_tool_nodes = [tool["id"] for tool in json.load(open(f"../data/{dataset}/tool_desc.json", 'r'))["nodes"]]
-    gt_tool_links = [", ".join([link["source"], link["target"]]) for link in json.load(open(f"../data/{dataset}/graph_desc.json", 'r'))["links"]]
+    tool_desc_data = json.load(open(f"../data/{dataset}/tool_desc.json", 'r'))
+    if isinstance(tool_desc_data, dict) and "nodes" in tool_desc_data:
+        gt_tool_nodes = [tool["id"] for tool in tool_desc_data["nodes"]]
+    else: # Handles list format like in ultratool
+        gt_tool_nodes = [tool["id"] for tool in tool_desc_data]
+
+    graph_desc_data = json.load(open(f"../data/{dataset}/graph_desc.json", 'r'))
+    # Handles both dict with "links" and list of links format
+    links_list = graph_desc_data.get("links", []) if isinstance(graph_desc_data, dict) else graph_desc_data
+    gt_tool_links = [", ".join([link["source"], link["target"]]) for link in links_list]
     
     gt_graph_dict = prediction_loader(gt_filename, content_type="graph")
     pred_graph_dict = prediction_loader(pred_filename, content_type="graph")
@@ -151,10 +159,14 @@ if __name__ == "__main__":
     llms = [name for name in os.listdir(prediction_dir) 
                 if os.path.isdir(os.path.join(prediction_dir, name))]
 
-    for dataset in ["huggingface"]:
+    for dataset in os.listdir("prediction"):
         for llm in os.listdir(f"prediction/{dataset}"):
             for gnn_type in ["SAGE"]:
                 method_name = f"GraphToken_{gnn_type}"
                 evaluate(dataset, llm, method_name)
      
     print(table)
+    
+    csv_string = table.get_csv_string()
+    with open("evaluation_results.csv", "w", newline="") as f_output:
+        f_output.write(csv_string)

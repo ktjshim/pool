@@ -6,7 +6,7 @@ import contextlib
 
 
 
-class GraphToken(torch.nn.Module):
+class GraphTokenNode(torch.nn.Module):
     def __init__(self, args, **kwargs):
         super().__init__()
         
@@ -29,8 +29,8 @@ class GraphToken(torch.nn.Module):
             self.EOS = "<end_of_turn>"
         
         else:
-            self.BOS = '<s> [INST] '
-            self.EOS_USER = '[/INST] '
+            self.BOS = '<s>[INST]'
+            self.EOS_USER = '[/INST]'
             self.EOS = '</s>'
             self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
             

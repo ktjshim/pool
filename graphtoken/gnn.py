@@ -62,19 +62,3 @@ class GNNEncoder(nn.Module):
         return node_emb
 
 
-
-
-class DiffPoolGNNEncoder(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_nodes=23, n_layers=1, gnn_type="GCN"):
-        super().__init__()
-        
-        conv = build_conv(gnn_type)
-        self.gnn_type = gnn_type
-        self.hidden_dim = hidden_dim 
-        self.output_dim = output_dim
-        self.num_nodes = num_nodes
-        self.act = nn.LeakyReLU()
-        
-    
-    def forward(self, x, edge_index):
-        pass

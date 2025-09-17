@@ -4,11 +4,14 @@ from tqdm import tqdm
 import torch 
 import json 
 import numpy as np
+from plan_dataset_kshot import TaskPlanningDatasetKshot
 from plan_dataset import TaskPlanningDataset
 from torch.utils.data import DataLoader
 from torch.nn.utils import clip_grad_norm_
-from glm_graph import GraphToken 
-# from glm_node import GraphToken
+from glm_graph import GraphTokenGraph
+from glm_node import GraphTokenNode
+from glm_diffpool import GraphTokenPool
+from glm_node_centrality import GraphTokenCentrality
 import argparse
 from ckpt import save_checkpoint, reload_best_model
 import sys
@@ -19,7 +22,7 @@ from torch_geometric.utils import degree
 from datetime import datetime
 
 # 속도를 위해서 FP32 -> TF32
-torch.set_float32_matmul_precision('high')
+# torch.set_float32_matmul_precision('high')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -27,7 +30,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset", type=str, default="huggingface")
     parser.add_argument("--llm", type=str, default="Mistral-7B")
     parser.add_argument("--llm_model_path", type=str, default="")
-    parser.add_argument("--seed", default=0)
+    parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", type=str, default="cuda:0")
 
     parser.add_argument("--max_txt_length", type=int, default=512)
@@ -38,7 +41,11 @@ if __name__ == "__main__":
     parser.add_argument("--gnn_output_dim", type=int, default=4096) # Mistral-7B 4096, CodeLlama-13B 5120 #gpt-oss-20b 2880
     parser.add_argument("--n_layers", type=int, default=2)
     parser.add_argument("--gnn_type", type=str, default="SAGE", choices=["GCN", "SAGE", "GIN", "GAT", "TransformerConv"])
-    parser.add_argument("--max_degree", type=int, default=300)
+    parser.add_argument("--max_degree", type=int, default=300),
+    parser.add_argument("--max_nodes_per_graph", type=int, default=23) # huggingface: 23, ultratool: 260
+    parser.add_argument("--experiment", type=str, default="diffpool")
+    parser.add_argument("--shot", type=str, default="0shot")
+
 
     parser.add_argument("--num_epochs", type=int, default=2)
     parser.add_argument("--batch_size", type=int, default=6)
@@ -53,7 +60,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     today = datetime.now().strftime("%m%d")
-    wandb.init(project="GraphToken", name=f"{args.dataset}_{args.llm}_{args.name}_{today}")
+    wandb.init(project="GraphToken_fp32", name=f"{args.dataset}_{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}")
     
     print('= ' * 20)
     print('## Starting Time:', get_cur_time(), flush=True)
@@ -78,7 +85,14 @@ if __name__ == "__main__":
     args.llm_model_path = path_mapping[args.llm]
     args.gnn_output_dim = gnn_hidden_mapping[args.llm]
     
-    plan_dataset = TaskPlanningDataset(args.dataset)
+    
+    if args.shot == "0shot":
+        plan_dataset = TaskPlanningDataset(args.dataset)
+    elif args.shot == "3shot":
+        plan_dataset = TaskPlanningDatasetKshot(args.dataset, k=3)
+    else:
+        NotImplementedError
+    
     train_ids, test_ids = plan_dataset.idxes_split["train"], plan_dataset.idxes_split["test"]
     train_dataset = [plan_dataset[i] for i in train_ids[: int(0.8 * len(train_ids))]]
     eval_dataset = [plan_dataset[i] for i in train_ids[int(0.8 * len(train_ids)): ]]
@@ -90,10 +104,22 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=args.eval_batch_size, drop_last=False, pin_memory=True, shuffle=False)
 
     # 속도 빨라지나 테스트
-    model = torch.compile(model = GraphToken(args))
+    if args.experiment == "graph":
+        model = torch.compile(model = GraphTokenGraph(args))
+    elif args.experiment == "node":
+        model = torch.compile(model = GraphTokenNode(args))
+    elif args.experiment == "diffpool":
+        model = torch.compile(model = GraphTokenPool(args))
+    elif args.experiment == "centrality":
+        model = torch.compile(model = GraphTokenCentrality(args))
+    else:
+        raise NotImplementedError
+
+    
+    
     # 학습 중 결과 확인
-    os.makedirs(f"prediction_train/{args.dataset}/{args.llm}_{args.name}", exist_ok=True)
-    train_process = f"prediction_train/{args.dataset}/{args.llm}_{args.name}/GraphToken_{args.gnn_type}.json"
+    os.makedirs(f"prediction_train/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
+    train_process = f"prediction_train/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
     
     params = [p for _, p in model.named_parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(
@@ -111,8 +137,9 @@ if __name__ == "__main__":
     
     
     # add centrality
-    out_degree = degree(task_graph.edge_index[0], dtype=torch.long).to(device)
-    in_degree = degree(task_graph.edge_index[1], dtype=torch.long).to(device)
+    num_nodes = task_graph.num_nodes
+    out_degree = degree(task_graph.edge_index[0], num_nodes= num_nodes, dtype=torch.long).to(device)
+    in_degree = degree(task_graph.edge_index[1], num_nodes= num_nodes, dtype=torch.long).to(device)
     task_graph.out_degree = out_degree
     task_graph.in_degree = in_degree
     
@@ -193,12 +220,12 @@ if __name__ == "__main__":
     torch.cuda.empty_cache()
     torch.cuda.reset_max_memory_allocated()
 
-    os.makedirs(f"prediction/{args.dataset}/{args.llm}_{args.name}", exist_ok=True)
-    path = f"prediction/{args.dataset}/{args.llm}_{args.name}/GraphToken_{args.gnn_type}.json"
+    os.makedirs(f"prediction/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
+    path = f"prediction/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
     
     
-    os.makedirs(f"prediction_errors/{args.dataset}/{args.llm}_{args.name}", exist_ok=True)
-    error_path = f"prediction_errors/{args.dataset}/{args.llm}_{args.name}/GraphToken_{args.gnn_type}.json"
+    os.makedirs(f"prediction_errors/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
+    error_path = f"prediction_errors/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
     
 
     model = reload_best_model(model, args)
