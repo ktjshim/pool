@@ -18,9 +18,13 @@ class TaskPlanningDatasetKshot(Dataset):
         self.prepare_prompt()
 
     def prepare_prompt(self):
+        
         # 1. Prepare the tool list string
         tool_list = json.load(open(f"../data/{self.dataset}/tool_desc.json", "r"))["nodes"]
-        tool_string = "# TASK LIST #:\n" + ", ".join([task["id"] for task in tool_list]) 
+        tool_string = "# TASK LIST #:\n"
+        for k, tool in enumerate(tool_list):
+            tool_string += json.dumps(tool) + "\n"
+        
 
         # 2. Prepare the k-shot example string (demo_string)
         demo_string = ""
@@ -39,22 +43,22 @@ class TaskPlanningDatasetKshot(Dataset):
             demo_ids_to_use = demos_id_list.get(self.dataset, [])[:self.k_shot]
             
             if demo_ids_to_use:
-                demo_string += "\n\nHere are provided examples for your reference."
                 for demo_id in demo_ids_to_use:
                     # Check if the demo data exists in our loaded raw data
                     if demo_id in self.raw_data_dictionary:
                         demo_data = self.raw_data_dictionary[demo_id]
                         user_request = demo_data["request"]
                         result = json.dumps(demo_data["label"])
-                        demo_string += f"""\n\n# EXAMPLE #:\n# USER REQUEST #: {user_request}\n# RESULT #: {result}"""
+                        demo_string += f"""\n# EXAMPLE #:\n# USER REQUEST #: {user_request}\n# RESULT #: {result}"""
         
         # 3. Define the main prompt structure
-        # (Using the PROMPT from your original script)
-        main_prompt = """\n\n# GOAL #\nPlease understand the user's request and generate task steps and task invocation graph to solve it.""" \
-                    + """\n\n# REQUIREMENT #\n1. The format must in a strict JSON format as {"task_steps": [ concrete step descriptions ], "task_nodes": [ a list of tasks to be executed in sequence to fulfill user's request ], "task_links": [{"source": "task name i", "target": "task name j"}]}\n""" \
-                    + """2. The generated task steps and task nodes can resolve the given user request perfectly. Task name must be selected from TASK LIST.\n""" \
-                    + """3. Task steps should strictly aligned with task nodes, and the number of task steps should be same with the task nodes.\n""" \
-                    + """4. The task links should reflect the dependencies among task nodes, i.e. the order in which the APIs are invoked.\n"""
+        main_prompt = ("""\n# GOAL #: Based on the above tools, I want you generate task steps and task nodes to solve the # USER REQUEST #. The format must in a strict JSON format, like: {"task_steps": [ step description of one or more steps ], "task_nodes": [{"task": "tool name must be from # TASK LIST #", "arguments": [ a concise list of arguments for the tool. Either original text, or user-mentioned filename, or tag '<node-j>' (start from 0) to refer to the output of the j-th node. ]}], "task_links": [{"source": "task name i", "target": "task name j"}]}\n""" 
+        + """\n# REQUIREMENT #:\n""" 
+        + """1. the generated task steps and task nodes can resolve the given user request # USER REQUEST # perfectly. Task name must be selected from # TASK LIST #; \n""" 
+        + """2. the task steps should strictly aligned with the task nodes, and the number of task steps should be same with the task nodes;\n""" \
+        + """3. the dependencies among task steps should align with the argument dependencies of the task nodes;\n""" 
+        + """4. the tool arguments should be align with the input-type field of # TASK LIST #;\n""" 
+        + """\nHere are provided examples for your reference.\n""")
         
         # 4. Combine all parts: tool list + main goal + demos + user request placeholder
         self.prompt = (tool_string 
@@ -104,7 +108,8 @@ class TaskPlanningDatasetKshot(Dataset):
             "huggingface": ["10523150", "14611002", "22067492"],
             "multimedia": ["30934207", "20566230", "19003517"],
             "dailylife": ["27267145", "91005535", "38563456"],
-            "tmdb": [1]
+            "tmdb": [1],
+            "ultratool": ["1355", "1307", "2311"]
         }
         demo_ids_to_exclude = demos_id_list.get(self.dataset, [])
         

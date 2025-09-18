@@ -22,19 +22,19 @@ from torch_geometric.utils import degree
 from datetime import datetime
 
 # 속도를 위해서 FP32 -> TF32
-# torch.set_float32_matmul_precision('high')
+torch.set_float32_matmul_precision('high')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--dataset", type=str, default="huggingface")
+    parser.add_argument("--dataset", type=str, default="ultratool")
     parser.add_argument("--llm", type=str, default="Mistral-7B")
     parser.add_argument("--llm_model_path", type=str, default="")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", type=str, default="cuda:0")
 
-    parser.add_argument("--max_txt_length", type=int, default=512)
-    parser.add_argument("--max_ans_length", type=int, default=512)
+    parser.add_argument("--max_txt_length", type=int, default=10512)
+    parser.add_argument("--max_ans_length", type=int, default=256)
 
     parser.add_argument("--gnn_in_dim", type=int, default=1024)
     parser.add_argument("--gnn_hidden_dim", type=int, default=1024)
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     parser.add_argument("--max_degree", type=int, default=300),
     parser.add_argument("--max_nodes_per_graph", type=int, default=23) # huggingface: 23, ultratool: 260
     parser.add_argument("--experiment", type=str, default="diffpool")
-    parser.add_argument("--shot", type=str, default="0shot")
+    parser.add_argument("--shot", type=str, default="1shot")
 
 
     parser.add_argument("--num_epochs", type=int, default=2)
@@ -105,7 +105,8 @@ if __name__ == "__main__":
 
     # 속도 빨라지나 테스트
     if args.experiment == "graph":
-        model = torch.compile(model = GraphTokenGraph(args))
+        # model = torch.compile(model = GraphTokenGraph(args))
+        model = GraphTokenGraph(args)
     elif args.experiment == "node":
         model = torch.compile(model = GraphTokenNode(args))
     elif args.experiment == "diffpool":
@@ -178,7 +179,7 @@ if __name__ == "__main__":
 
             progress_bar.update(1)
             
-            if (step + 1) % 200 == 0:
+            if (step + 1) % 400 == 0:
                 print(f"\n--- Running Inference Check at Step {step + 1} ---")
                 
                 model.eval()

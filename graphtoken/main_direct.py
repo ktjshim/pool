@@ -27,7 +27,7 @@ from datetime import datetime
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--dataset", type=str, default="huggingface")
+    parser.add_argument("--dataset", type=str, default="ultratool")
     parser.add_argument("--llm", type=str, default="Mistral-7B")
     parser.add_argument("--llm_model_path", type=str, default="")
     parser.add_argument("--seed", default=0)
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     args.llm_model_path = path_mapping[args.llm]
     args.gnn_output_dim = gnn_hidden_mapping[args.llm]
     
-    plan_dataset = TaskPlanningDataset(args.dataset)
+    plan_dataset = TaskPlanningDatasetKshot(args.dataset, k_shot=1)
     train_ids, test_ids = plan_dataset.idxes_split["train"], plan_dataset.idxes_split["test"]
     train_dataset = [plan_dataset[i] for i in train_ids[: int(0.8 * len(train_ids))]]
     eval_dataset = [plan_dataset[i] for i in train_ids[int(0.8 * len(train_ids)): ]]

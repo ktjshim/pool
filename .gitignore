@@ -2,5 +2,5 @@ __pycache__
 
 graphtoken/output/
 graphtoken/wandb/
-
+graphtoken/__pycache__/
 

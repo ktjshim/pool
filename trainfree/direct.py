@@ -129,9 +129,9 @@ async def get_response(url, payload, resource_type=False):
 @click.option("--temperature", type=float, default=0.2)
 @click.option("--top_p", type=float, default=0.1)
 @click.option("--api_addr", type=str, default="localhost")
-@click.option("--api_port", type=int, default=8008)
-@click.option("--llm", type=str, default="CodeLlama-13b-Instruct-hf") 
-@click.option("--use_demos", type=int, default=1)
+@click.option("--api_port", type=int, default=8000)
+@click.option("--llm", type=str, default="mistralai/Mistral-7B-Instruct-v0.2") 
+@click.option("--use_demos", type=int, default=0)
 @click.option("--multiworker", type=int, default=4)
 def main(dataset, temperature, top_p, api_addr, api_port, llm, use_demos, multiworker):
     print('= ' * 20)
@@ -142,7 +142,7 @@ def main(dataset, temperature, top_p, api_addr, api_port, llm, use_demos, multiw
     llm_short_names = {
         "CodeLlama-13b-Instruct-hf": "CodeLlama-13b",
         "vicuna-13b-v1.5": "vicuna-13b",
-        "Mistral-7B-Instruct-v0.2": "mistral-7b",
+        "mistralai/Mistral-7B-Instruct-v0.2": "mistral-7b",
         "CodeLlama-7b-Instruct-hf": "CodeLlama-7b",
         "Baichuan2-13B-Chat": "Baichuan-13b",
     }
@@ -185,12 +185,14 @@ def main(dataset, temperature, top_p, api_addr, api_port, llm, use_demos, multiw
     # Prepare Demo(s) String to prompt LLM
     #  - Default setting: 1-shot
     demo_string = ""
+    demos_id = [] 
     if use_demos:
         demos_id_list = {
             "huggingface": ["10523150", "14611002", "22067492"],
             "multimedia": ["30934207", "20566230", "19003517"],
             "dailylife": ["27267145", "91005535", "38563456"],
-            "tmdb": [1]
+            "tmdb": [1],
+            "ultratool": ["1355", "1307", "2311"]
         }
 
         demos_id = demos_id_list[dataset][:use_demos]

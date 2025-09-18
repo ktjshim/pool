@@ -161,8 +161,11 @@ if __name__ == "__main__":
 
     for dataset in os.listdir("prediction"):
         for llm in os.listdir(f"prediction/{dataset}"):
-            for gnn_type in ["SAGE"]:
-                method_name = f"GraphToken_{gnn_type}"
+            for gnn_type in ["SAGE", "direct"]:
+                if gnn_type == "direct":
+                    method_name = "direct"
+                else:
+                    method_name = f"GraphToken_{gnn_type}"
                 evaluate(dataset, llm, method_name)
      
     print(table)
