@@ -5,5 +5,7 @@ graphtoken/wandb/
 graphtoken/__pycache__/
 
 taglm/__pycache__/
+taglm/output
 taglm/wandb
 taglm/visualize_masks.py
+taglm/practice.ipynb
