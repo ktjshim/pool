@@ -21,13 +21,13 @@ def save_checkpoint(model, optimizer, cur_epoch, args, is_best=False):
         "epoch": cur_epoch
     }
 
-    path = f"{args.output_dir}/{args.dataset}/{args.llm}/{args.gnn_type}_Epoch{args.num_epochs}_checkpoint_{'best' if is_best else cur_epoch}.pth"
+    path = f"{args.output_dir}/{args.dataset}/{args.llm}/{args.experiment}_{args.pool_ratio}_{args.seed}_{args.gnn_type}_Epoch{args.num_epochs}_checkpoint_{'best' if is_best else cur_epoch}.pth"
     print("Saving checkpoint at epoch {} to {}".format(cur_epoch, path))
     torch.save(save_obj, path)
 
 
 def reload_best_model(model, args):
-    checkpoint_path = f"{args.output_dir}/{args.dataset}/{args.llm}/{args.gnn_type}_Epoch{args.num_epochs}_checkpoint_best.pth"
+    checkpoint_path = f"{args.output_dir}/{args.dataset}/{args.llm}/{args.experiment}_{args.pool_ratio}_{args.seed}_{args.gnn_type}_Epoch{args.num_epochs}_checkpoint_best.pth"
     
     print("Loading checkpoint from {}".format(checkpoint_path))
 

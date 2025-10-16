@@ -133,6 +133,7 @@ class GraphTokenPool(torch.nn.Module):
                 return_dict=True,
                 labels=label_input_ids
             )
+
         return outputs.loss, outputs.logits
     
     def inference(self, samples, task_graph):

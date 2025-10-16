@@ -98,8 +98,8 @@ class GraphTokenDirect(torch.nn.Module):
         batch_attention_mask = []
         batch_label_input_ids = []
         for i in range(batch_size):
-            label_input_ids = labels.input_ids[i][:self.max_new_tokens] + eos_tokens.input_ids 
-            input_ids = requests.input_ids[i][:self.max_txt_len] + eos_user_tokens.input_ids + label_input_ids
+            label_input_ids = labels.input_ids[i]+ eos_tokens.input_ids 
+            input_ids = requests.input_ids[i] + eos_user_tokens.input_ids + label_input_ids
 
             input_embeds = self.word_embedding(torch.tensor(input_ids).to(self.device))
             
@@ -168,7 +168,10 @@ class GraphTokenDirect(torch.nn.Module):
                 max_new_tokens=400,
                 attention_mask=attention_mask,
                 # use_cache=True
-                use_cache=False
+                use_cache=True,
+                do_sample=True,
+                top_p=0.1,
+                temperature=0.2
             )
         pred = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
 

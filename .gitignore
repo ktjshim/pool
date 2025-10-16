@@ -4,3 +4,6 @@ graphtoken/output/
 graphtoken/wandb/
 graphtoken/__pycache__/
 
+taglm/__pycache__/
+taglm/wandb
+taglm/visualize_masks.py

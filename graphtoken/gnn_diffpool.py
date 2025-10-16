@@ -176,4 +176,3 @@ class HierarchicalDiffPool(nn.Module):
         output = self.final_linear(x)
         
         return output.squeeze(0)
-

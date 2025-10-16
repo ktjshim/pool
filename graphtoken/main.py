@@ -21,7 +21,7 @@ from torch_geometric.data import Data
 from torch_geometric.utils import degree
 from datetime import datetime
 
-# 속도를 위해서 FP32 -> TF32
+# 속도를 위해서 FP32 -> TF32 
 torch.set_float32_matmul_precision('high')
 
 if __name__ == "__main__":
@@ -42,14 +42,15 @@ if __name__ == "__main__":
     parser.add_argument("--n_layers", type=int, default=2)
     parser.add_argument("--gnn_type", type=str, default="SAGE", choices=["GCN", "SAGE", "GIN", "GAT", "TransformerConv"])
     parser.add_argument("--max_degree", type=int, default=300),
-    parser.add_argument("--max_nodes_per_graph", type=int, default=23) # huggingface: 23, ultratool: 260
+    parser.add_argument("--max_nodes_per_graph", type=int, default=260) # huggingface: 23, ultratool: 260
+    parser.add_argument("--pool_ratio", type=float, default=0.5) 
     parser.add_argument("--experiment", type=str, default="diffpool")
     parser.add_argument("--shot", type=str, default="1shot")
 
 
-    parser.add_argument("--num_epochs", type=int, default=2)
-    parser.add_argument("--batch_size", type=int, default=6)
-    parser.add_argument("--eval_batch_size", type=int, default=6)
+    parser.add_argument("--num_epochs", type=int, default=1)
+    parser.add_argument("--batch_size", type=int, default=2)
+    parser.add_argument("--eval_batch_size", type=int, default=8)
     parser.add_argument("--patience", type=int, default=2)
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--wd", type=float, default=0.05)
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     today = datetime.now().strftime("%m%d")
-    wandb.init(project="GraphToken_fp32", name=f"{args.dataset}_{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}")
+    wandb.init(project="GraphToken_fp32", name=f"{args.dataset}_{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}")
     
     print('= ' * 20)
     print('## Starting Time:', get_cur_time(), flush=True)
@@ -105,8 +106,8 @@ if __name__ == "__main__":
 
     # 속도 빨라지나 테스트
     if args.experiment == "graph":
-        # model = torch.compile(model = GraphTokenGraph(args))
-        model = GraphTokenGraph(args)
+        model = torch.compile(model = GraphTokenGraph(args))
+        # model = GraphTokenGraph(args)
     elif args.experiment == "node":
         model = torch.compile(model = GraphTokenNode(args))
     elif args.experiment == "diffpool":
@@ -119,8 +120,8 @@ if __name__ == "__main__":
     
     
     # 학습 중 결과 확인
-    os.makedirs(f"prediction_train/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
-    train_process = f"prediction_train/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
+    os.makedirs(f"prediction_train/{args.dataset}/{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
+    train_process = f"prediction_train/{args.dataset}/{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
     
     params = [p for _, p in model.named_parameters() if p.requires_grad]
     optimizer = torch.optim.AdamW(
@@ -179,57 +180,65 @@ if __name__ == "__main__":
 
             progress_bar.update(1)
             
-            if (step + 1) % 400 == 0:
-                print(f"\n--- Running Inference Check at Step {step + 1} ---")
+            # if (step + 1) % 400 == 0:
+            #     print(f"\n--- Running Inference Check at Step {step + 1} ---")
                 
-                model.eval()
+            #     model.eval()
                 
-                # 결과 저장
-                with torch.no_grad():
-                    id_list, predictions, requests = model.inference(batch, task_graph)
-                    with open(train_process, 'a') as train_file:
-                        train_file.write(json.dumps(predictions) + "\n")
+            #     # 결과 저장
+            #     with torch.no_grad():
+            #         id_list, predictions, requests = model.inference(batch, task_graph)
+            #         with open(train_process, 'a') as train_file:
+            #             train_file.write(json.dumps(predictions) + "\n")
                         
                 # import code; code.interact(local=locals()) # debug here
                 
         print(f"Epoch {epoch}|{args.num_epochs}: Train Loss (Epoch Mean): {epoch_loss / len(train_loader)}")
         wandb.log({'Train Loss (Epoch Mean)': epoch_loss / len(train_loader)})
 
-        val_loss = 0. 
-        model.eval()
+        
+        # torch.cuda.empty_cache() 
+        # val_loss = 0. 
+        # model.eval()
 
-        with torch.no_grad():
-            for step, batch in enumerate(val_loader):
-                loss, logits = model(batch, task_graph)
-                val_loss += loss.item()
+        # with torch.no_grad():
+        #     for step, batch in enumerate(val_loader):
+        #         loss, logits = model(batch, task_graph)
+        #         val_loss += loss.item()
                 
                 
-            val_loss = val_loss / len(val_loader)
-            wandb.log({'Val Loss (Epoch Mean)': val_loss})
-            print(f"Epoch: {epoch}|{args.num_epochs}: Val Loss: {val_loss}")
+        #     val_loss = val_loss / len(val_loader)
+        #     wandb.log({'Val Loss (Epoch Mean)': val_loss})
+        #     print(f"Epoch: {epoch}|{args.num_epochs}: Val Loss: {val_loss}")
         
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss 
-            best_epoch = epoch 
-            # save_checkpoint(model, optimizer, epoch, args, is_best=False)
-            save_checkpoint(model, optimizer, epoch, args, is_best=True)
+        # if val_loss < best_val_loss:
+        #     best_val_loss = val_loss 
+        #     best_epoch = epoch 
+        #     # save_checkpoint(model, optimizer, epoch, args, is_best=False)
+        #     save_checkpoint(model, optimizer, epoch, args, is_best=True)
         
-        if epoch - best_epoch >= args.patience:
-            print(f"Early stop at epoch {epoch}")
-            break 
+        # if epoch - best_epoch >= args.patience:
+        #     print(f"Early stop at epoch {epoch}")
+        #     break 
+       
 
+    save_checkpoint(model, optimizer, epoch, args, is_best=True)
     torch.cuda.empty_cache()
     torch.cuda.reset_max_memory_allocated()
 
-    os.makedirs(f"prediction/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
-    path = f"prediction/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
+    os.makedirs(f"prediction/{args.dataset}/{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
+    path = f"prediction/{args.dataset}/{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
     
     
-    os.makedirs(f"prediction_errors/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
-    error_path = f"prediction_errors/{args.dataset}/{args.llm}_{args.experiment}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
+    os.makedirs(f"prediction_errors/{args.dataset}/{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}", exist_ok=True)
+    error_path = f"prediction_errors/{args.dataset}/{args.llm}_{args.experiment}_{args.pool_ratio}_{args.shot}_s{args.seed}_{today}/GraphToken_{args.gnn_type}.json"
     
-
-    model = reload_best_model(model, args)
+    try:
+        model = reload_best_model(model, args)
+        print("model reload failed")
+    except:
+        model = model
+        
     model.eval()
     progress_bar_test = tqdm(range(len(test_loader)))
     with open(path, 'w') as file:

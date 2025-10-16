@@ -30,6 +30,9 @@ huggingface,mistral-7b-direct-1shot-0917,direct,0.587,0.2975,15.43,0.1432,0.3951
 huggingface,mistral-7b-direct-2shot-0917,direct,0.6075,0.2774,15.66,0.1395,0.4096,0.3468,0.5201
 huggingface,mistral-7b-direct-3shot-0917,direct,0.6129,0.2946,15.83,0.1413,0.3888,0.3588,0.5271
 huggingface,Mistral-7B_graph_1shot_s0_0917,GraphToken_SAGE,0.0576,0.0,0.0,0.0,0.0,0.0,0.0
+huggingface,Mistral-7B_graph_1shot_s0_0918,GraphToken_SAGE,0.7215,0.4442,28.66,0.027,0.0862,0.1367,0.2705
+huggingface,Mistral-7B_diffpool_0.1_1shot_s0_0921,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+huggingface,Mistral-7B_diffpool_0.2_1shot_s0_0926,GraphToken_SAGE,0.7057,0.3846,22.67,0.0266,0.087,0.1799,0.3421
 ultratool,mistral-7b-direct-1shot-0917,direct,0.5044,0.2081,14.2,0.1535,0.3448,0.5866,0.7079
 ultratool,mistral-7b-direct-2shot-0917,direct,0.5453,0.2192,16.4,0.1313,0.3259,0.5484,0.6943
 ultratool,mistral-7b-direct-3shot-0917,direct,0.5754,0.2429,22.4,0.1452,0.314,0.4999,0.588
@@ -37,3 +40,11 @@ ultratool,mistral-7b-direct-0shot-0917,direct,0.0395,0.0166,1.03,0.9359,0.963,0.
 ultratool,mistral-7b-direct-0shot-s1-0917,direct,0.0413,0.0202,1.44,0.9342,0.9548,0.9615,0.9671
 ultratool,mistral-7b-direct-1shot-s1-0917,direct,0.5037,0.2062,13.97,0.1482,0.3381,0.5934,0.7166
 ultratool,Mistral-7B_graph_1shot_s0_0917,GraphToken_SAGE,0.0656,0.0323,2.38,0.0,0.0,0.0,0.0
+ultratool,Mistral-7B_direct_0917,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ultratool,Mistral-7B_graph_1shot_s0_0918,GraphToken_SAGE,0.7992,0.6023,56.05,0.0179,0.0504,0.2006,0.2339
+ultratool,Mistral-7B_direct_0918,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ultratool,Mistral-7B_diffpool_0.75_1shot_s1_0919,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ultratool,Mistral-7B_diffpool_0.15_1shot_s1_0919,GraphToken_SAGE,0.5,0.5,50.0,0.5,0.5,0.5,0.5
+ultratool,Mistral-7B_diffpool_0.2_1shot_s1_0919,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ultratool,Mistral-7B_diffpool_0.15_1shot_s1_0920,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+ultratool,Mistral-7B_diffpool_0.15_1shot_s0_0926,GraphToken_SAGE,0.0,0.0,0.0,0.0,0.0,0.0,0.0

@@ -22,7 +22,7 @@ from torch_geometric.utils import degree
 from datetime import datetime
 
 # 속도를 위해서 FP32 -> TF32
-# torch.set_float32_matmul_precision('high')
+torch.set_float32_matmul_precision('high')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -96,8 +96,8 @@ if __name__ == "__main__":
     test_loader = DataLoader(test_dataset, batch_size=args.eval_batch_size, drop_last=False, pin_memory=True, shuffle=False)
 
     # 속도 빨라지나 테스트
-    model = torch.compile(model = GraphTokenDirect(args))
-    
+    # model = torch.compile()
+    model = GraphTokenDirect(args)
     
     # 학습 중 결과 확인
     os.makedirs(f"prediction_train/{args.dataset}/{args.llm}_{args.name}_{today}", exist_ok=True)

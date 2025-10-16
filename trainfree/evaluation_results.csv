@@ -1,0 +1,2 @@
+Dataset,LLM,Method,NF,LF,Succ,NH-1,NH-2,LH-1,LH-2
+ultratool,gpt-oss-20b,direct,0.4999,0.2766,23.63,0.0886,0.0886,0.1078,0.1392
