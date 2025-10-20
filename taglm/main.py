@@ -6,11 +6,12 @@ import random
 import torch
 import numpy as np
 import sys
-from graph_mistral import GraphMistralForCausalLM
 import wandb
 sys.path.append("../")
 from utils import prepare_training_ids, init_random_state
+from graph_mistral import GraphMistralForCausalLM
 
+torch.set_float32_matmul_precision('high')
 
 BOS = '<s>[INST]'
 EOS_USER = '[/INST]'
@@ -54,17 +55,23 @@ class GraphTrainer(Trainer):
 
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         """
-        Override compute_loss to pass token_type_ids and graph_attention_mask to the model
+        Override compute_loss to pass token_type_ids, graph_attention_mask, graph_token_indices, and graph_adjacency to the model
         """
         # Extract graph-specific inputs
         token_type_ids = inputs.pop("token_type_ids", None)
         graph_attention_mask = inputs.pop("graph_attention_mask", None)
+        graph_token_indices = inputs.pop("graph_token_indices", None)
+        graph_adjacency = inputs.pop("graph_adjacency", None)
 
         # Forward pass with graph inputs
         if token_type_ids is not None:
             inputs["token_type_ids"] = token_type_ids
         if graph_attention_mask is not None:
             inputs["graph_attention_mask"] = graph_attention_mask
+        if graph_token_indices is not None:
+            inputs["graph_token_indices"] = graph_token_indices
+        if graph_adjacency is not None:
+            inputs["graph_adjacency"] = graph_adjacency
 
         # Get model outputs
         outputs = model(**inputs)
@@ -127,13 +134,14 @@ def prepare_llm_training_data(dataset_name="huggingface", train_ids=None):
     return data_contents
 
 
-def prepare_graph_structure(dataset_name):
+def prepare_graph_structure(dataset_name, tokenizer):
     """
     Prepare graph structure once for the entire dataset.
     Tokenizes the graph and builds the base attention mask that will be reused.
 
     Args:
         dataset_name: name of the dataset
+        tokenizer: the tokenizer to use for tokenizing the graph
 
     Returns:
         dict with:
@@ -157,20 +165,41 @@ def prepare_graph_structure(dataset_name):
     # Create graph representation
     graph_str = "<start_graph>" + "".join([f"<node>{tool}" for tool in all_tools]) + "<end_graph>"
 
-    # Tokenize the graph once
-    graph_token_ids = tokenizer(graph_str, add_special_tokens=False).input_ids
+    # Tokenize the graph once with offset mapping to track character-to-token positions
+    encoding = tokenizer(graph_str, add_special_tokens=False, return_offsets_mapping=True)
+    graph_token_ids = encoding.input_ids
+    offset_mapping = encoding.offset_mapping
 
-    # Find token spans for each tool (relative positions within graph)
+    # Find token spans for each tool using offset mapping
+    # Tokenization is context-dependent, so we can't match token sequences directly
     graph_token_spans = {}
-    for tool_name in all_tools:
-        tool_marker = f"<node>{tool_name}"
-        tool_tokens = tokenizer(tool_marker, add_special_tokens=False).input_ids
 
-        # Find where this tool appears in graph_token_ids
-        for i in range(len(graph_token_ids) - len(tool_tokens) + 1):
-            if graph_token_ids[i:i+len(tool_tokens)] == tool_tokens:
-                graph_token_spans[tool_name] = (i, i + len(tool_tokens))
+    for tool_name in all_tools:
+        # Find character position of this tool marker in the graph string
+        tool_marker = f"<node>{tool_name}"
+        char_start = graph_str.find(tool_marker)
+
+        if char_start == -1:
+            continue
+
+        char_end = char_start + len(tool_marker)
+
+        # Find which tokens overlap with this character range using offset_mapping
+        token_start = None
+        token_end = None
+
+        for i, (offset_start, offset_end) in enumerate(offset_mapping):
+            # Token overlaps with the start of our marker
+            if token_start is None and offset_start <= char_start < offset_end:
+                token_start = i
+
+            # Token overlaps with or extends past the end of our marker
+            if offset_end >= char_end:
+                token_end = i + 1  # Exclusive end
                 break
+
+        if token_start is not None and token_end is not None:
+            graph_token_spans[tool_name] = (token_start, token_end)
 
     # Build base graph attention mask (only for graph region)
     graph_len = len(graph_token_ids)
@@ -189,29 +218,51 @@ def prepare_graph_structure(dataset_name):
             source_start, source_end = graph_token_spans[source_tool]
             target_start, target_end = graph_token_spans[target_tool]
 
-            # Bidirectional blocked attention
+            # directional mapping
             base_graph_mask[source_start:source_end, target_start:target_end] = True
-            base_graph_mask[target_start:target_end, source_start:source_end] = True
+            # base_graph_mask[target_start:target_end, source_start:source_end] = True
+
+    # Build adjacency matrix for graph structure embedding
+    num_tools = len(all_tools)
+    tool_to_idx = {tool: idx for idx, tool in enumerate(all_tools)}
+    graph_adjacency = torch.zeros(num_tools, num_tools, dtype=torch.bool)
+
+    # Add self-loops
+    for i in range(num_tools):
+        graph_adjacency[i, i] = True
+
+    # Add edges from graph_links
+    for link in graph_links:
+        source_tool = link["source"]
+        target_tool = link["target"]
+        if source_tool in tool_to_idx and target_tool in tool_to_idx:
+            src_idx = tool_to_idx[source_tool]
+            tgt_idx = tool_to_idx[target_tool]
+            graph_adjacency[src_idx, tgt_idx] = True
 
     return {
         'graph_str': graph_str,
         'graph_token_ids': graph_token_ids,
         'graph_token_spans': graph_token_spans,
         'base_graph_mask': base_graph_mask,
+        'graph_adjacency': graph_adjacency,
         'all_tools': all_tools
     }
 
 
-def tokenizer_dataset(raw_data, graph_info):
+def tokenizer_dataset(raw_data, graph_info, tokenizer, device):
     """
     Tokenize dataset using pre-built graph structure (EFFICIENT VERSION).
 
     Args:
         raw_data: list of data samples
         graph_info: dict from prepare_graph_structure() containing pre-built graph
+        tokenizer: the tokenizer to use
+        device: the device to place tensors on
 
     Returns:
-        dict with input_ids, attention_mask, labels, token_type_ids, graph_attention_mask
+        dict with input_ids, attention_mask, labels, token_type_ids,
+        graph_attention_mask, and graph_token_indices
     """
     bos_tokens = tokenizer(BOS, add_special_tokens=False)
     eos_user_tokens = tokenizer(EOS_USER, add_special_tokens=False)
@@ -221,10 +272,13 @@ def tokenizer_dataset(raw_data, graph_info):
     graph_str = graph_info['graph_str']
     graph_token_ids = graph_info['graph_token_ids']
     base_graph_mask = graph_info['base_graph_mask']
+    graph_adjacency = graph_info['graph_adjacency']
     graph_len = len(graph_token_ids)
 
     full_input_ids, full_attention_masks, full_labels = [], [], []
     full_token_type_ids, full_graph_attention_masks = [], []
+    full_graph_token_indices = []
+    full_graph_adjacency = []
 
     for sample in raw_data:
         # Build prompt with pre-tokenized graph
@@ -255,22 +309,24 @@ def tokenizer_dataset(raw_data, graph_info):
         token_type_ids += [0] * len(eos_user_tokens.input_ids)  # EOS_USER
         token_type_ids += [0] * len(label_ids)  # labels are text
 
-        # Insert pre-built graph mask into full sequence mask (NO recomputation!)
-        total_len = len(input_ids)
-        graph_attention_mask = torch.zeros(total_len, total_len, dtype=torch.bool)
-
         # Calculate where graph tokens start in the full sequence
         graph_start = len(bos_tokens.input_ids) + len(prefix_ids)
         graph_end = graph_start + graph_len
 
-        # Insert the pre-built base_graph_mask (just copy, no computation!)
-        graph_attention_mask[graph_start:graph_end, graph_start:graph_end] = base_graph_mask
+        # Store graph token indices for this sample
+        graph_token_indices = list(range(graph_start, graph_end))
+
+        # Store only the graph region mask (not the full sequence mask)
+        # This will be [num_graph_tokens, num_graph_tokens]
+        graph_attention_mask = base_graph_mask.clone()
 
         full_input_ids.append(input_ids)
         full_attention_masks.append([1] * len(input_ids))
         full_labels.append(final_label_ids)
         full_token_type_ids.append(token_type_ids)
         full_graph_attention_masks.append(graph_attention_mask)
+        full_graph_token_indices.append(graph_token_indices)
+        full_graph_adjacency.append(graph_adjacency.clone())
 
     max_length = max([len(x) for x in full_input_ids])
 
@@ -285,40 +341,40 @@ def tokenizer_dataset(raw_data, graph_info):
         full_labels[i] = [IGNORE_INDEX] * pad_length + full_labels[i]
         full_token_type_ids[i] = [0] * pad_length + full_token_type_ids[i]
 
-        # Pad graph attention mask (2D)
-        current_mask_size = full_graph_attention_masks[i].shape[0]
-        if current_mask_size < max_length:
-            padded_mask = torch.zeros(max_length, max_length, dtype=torch.bool)
-            padded_mask[pad_length:, pad_length:] = full_graph_attention_masks[i]
-            full_graph_attention_masks[i] = padded_mask
-        elif current_mask_size > max_length:
-            full_graph_attention_masks[i] = full_graph_attention_masks[i][:max_length, :max_length]
+        # Adjust graph token indices for left padding (shift by pad_length)
+        full_graph_token_indices[i] = [idx + pad_length for idx in full_graph_token_indices[i]]
+
+        # Graph attention mask remains [num_graph_tokens, num_graph_tokens] - no padding needed!
 
     input_ids = torch.tensor(full_input_ids).to(device)
     attention_mask = torch.tensor(full_attention_masks).to(device)
     label_input_ids = torch.tensor(full_labels).to(device)
     token_type_ids = torch.tensor(full_token_type_ids).to(device)
     graph_attention_masks = torch.stack(full_graph_attention_masks).to(device)
+    graph_token_indices = torch.tensor(full_graph_token_indices).to(device)
+    graph_adjacency_batch = torch.stack(full_graph_adjacency).to(device)
 
     return {
         "input_ids": input_ids,
         "attention_mask": attention_mask,
         "labels": label_input_ids,
         "token_type_ids": token_type_ids,
-        "graph_attention_mask": graph_attention_masks
+        "graph_attention_mask": graph_attention_masks,
+        "graph_token_indices": graph_token_indices,
+        "graph_adjacency": graph_adjacency_batch
     }
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--dataset', type=str, default='huggingface', choices=['huggingface', 'multimedia', 'dailylife'])
+    parser.add_argument('--dataset', type=str, default='huggingface', choices=['huggingface', 'multimedia', 'dailylife', 'ultratool'])
     parser.add_argument('--llm', type=str, default="mistralai/Mistral-7B-Instruct-v0.2")
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--device', type=str, default="cuda:0")
     parser.add_argument('--num_epoch', type=int, default=2)
-    parser.add_argument('--wandb_project', type=str, default='graph-mistral-training')  # ADD THIS
-    parser.add_argument('--wandb_run_name', type=str, default=None)  # ADD THIS
+    parser.add_argument('--wandb_project', type=str, default='graph-mistral-training')
+    parser.add_argument('--wandb_run_name', type=str, default=None)
     args = parser.parse_args()
     print(args, "\n")
     init_random_state(args.seed)
@@ -333,11 +389,9 @@ if __name__ == "__main__":
 
 
     # ===================
-    # EFFICIENT: Process graph ONCE for the entire dataset
-    
-    graph_info = prepare_graph_structure(args.dataset)
+    graph_info = prepare_graph_structure(args.dataset, tokenizer)
     data_contents = prepare_llm_training_data(args.dataset, train_ids=train_ids)
-    encodings = tokenizer_dataset(data_contents, graph_info)
+    encodings = tokenizer_dataset(data_contents, graph_info, tokenizer, device)
     # ===================
 
     dataset = TextDataset(encodings)
@@ -347,12 +401,13 @@ if __name__ == "__main__":
 
     print(f"Dataset sizes: total={len(dataset)}, train={len(train_dataset)}, val={len(val_dataset)}")
 
-    save_dir = f"output/{args.dataset}_{args.llm}_seed{args.seed}"
-    
+    save_dir = f"output/{args.dataset}_{args.llm.split('/')[-1]}_seed{args.seed}"
+
+
+
     # ===================
-    # INITIALIZE WANDB
-    run_name = args.wandb_run_name or f"Graph{args.llm}_{args.dataset}_seed{args.seed}"
-    
+    run_name = args.wandb_run_name or f"Graph_{args.dataset}_{args.llm.split('/')[-1]}_seed{args.seed}"
+
     wandb.init(
         project=args.wandb_project,
         name=run_name,
@@ -372,13 +427,17 @@ if __name__ == "__main__":
     )
     # ===================
 
+    target_modules = ["q_proj", "v_proj"]
+    modules_to_save = []
+
     peft_config = LoraConfig(
         task_type="CAUSAL_LM",
         inference_mode=False,
         r=8,
         lora_alpha=16,
         lora_dropout=0.1,
-        target_modules=["q_proj", "v_proj"]
+        target_modules=target_modules,
+        modules_to_save=modules_to_save if modules_to_save else None
     )
 
     kwargs = {
@@ -388,9 +447,12 @@ if __name__ == "__main__":
         'device_map': "auto",
     }
 
-
     # ===================================================================
-    model = GraphMistralForCausalLM.from_pretrained(args.llm, **kwargs)
+
+    model = GraphMistralForCausalLM.from_pretrained(
+        args.llm,
+        **kwargs
+    )
     # ===================================================================
 
 
@@ -401,8 +463,8 @@ if __name__ == "__main__":
     training_args = TrainingArguments(
         output_dir=save_dir,
         learning_rate=1e-5,
-        per_device_eval_batch_size=2, # 1 for multimedia / dailylife
-        per_device_train_batch_size=2, # 1 for multimedia / dailylife
+        per_device_eval_batch_size=4, 
+        per_device_train_batch_size=4, 
         num_train_epochs=args.num_epoch,
         weight_decay=0.01,
         eval_strategy=IntervalStrategy.STEPS,
@@ -411,7 +473,8 @@ if __name__ == "__main__":
         save_total_limit=1,
         load_best_model_at_end=True,
         report_to="wandb",  
-        logging_steps=50, 
+        logging_steps=200, 
+        torch_compile=True
     )
 
     # Use GraphTrainer to properly handle token_type_ids and graph_attention_mask

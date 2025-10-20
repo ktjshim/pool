@@ -3,9 +3,24 @@ __pycache__
 graphtoken/output/
 graphtoken/wandb/
 graphtoken/__pycache__/
+graphtoken/prediction
+graphtoken/prediction_arxiv
+graphtoken/prediction_errors
+graphtoken/prediction_train
+graphtoken/practice.ipynb
+graphtoken/evaluation_results.csv
 
 taglm/__pycache__/
 taglm/output
 taglm/wandb
 taglm/visualize_masks.py
 taglm/practice.ipynb
+taglm/prediction
+taglm/prediction_errors
+taglm/evaluation_results.csv
+taglm/test_graph.py
+taglm/prepare_graph.ipynb
+taglm/test.py
+
+
+trainfree/prediction

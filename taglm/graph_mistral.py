@@ -304,6 +304,8 @@ class MistralModel(MistralPreTrainedModel):
         use_cache: Optional[bool] = None,
         cache_position: Optional[torch.LongTensor] = None,
         graph_attention_mask: Optional[torch.Tensor] = None,
+        graph_token_indices: Optional[torch.Tensor] = None,
+        _attention_mask=None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> BaseModelOutputWithPast:
         if (input_ids is None) ^ (inputs_embeds is not None):
@@ -333,34 +335,21 @@ class MistralModel(MistralPreTrainedModel):
             past_key_values=past_key_values,
             position_ids=position_ids,
         )
-
-        # Merge graph attention mask with causal mask
-        if graph_attention_mask is not None:
-            # graph_attention_mask: [batch, seq_len, seq_len] bool tensor (True = allow attention)
-            # causal_mask: [batch, 1, seq_len, seq_len] float tensor (0 = allow, -inf = block)
-
-            # Convert graph mask to match causal mask format
-            # Expand graph mask to match causal mask dimensions
-            graph_mask_expanded = graph_attention_mask.unsqueeze(1)  # [batch, 1, seq_len, seq_len]
-
-            # Convert bool to float: True -> 0.0 (allow), False -> -inf (block)
-            graph_mask_float = torch.where(
-                graph_mask_expanded,
-                torch.tensor(0.0, dtype=causal_mask.dtype, device=causal_mask.device),
-                torch.tensor(float('-inf'), dtype=causal_mask.dtype, device=causal_mask.device)
-            )
-
-            # For graph tokens, use graph mask; for text tokens, use causal mask
-            # We take the maximum (less restrictive) to allow both causal and graph attention
-            # Actually, we want to use the graph mask where it's defined (True values)
-            # and fall back to causal mask elsewhere
-            combined_mask = torch.where(
-                graph_mask_expanded,  # Where graph allows attention
-                graph_mask_float,      # Use graph mask (0.0)
-                causal_mask            # Otherwise use causal mask
-            )
-            causal_mask = combined_mask
-
+        
+        # # implement applying graph attention mask 
+        # if graph_attention_mask is not None:
+        #     for i in range(input_ids.shape[0]):
+        #             start, end = graph_token_indices[i][0], graph_token_indices[i][-1]
+        #             causal_mask[i][0][start:end+1, start:end+1] = graph_attention_mask[0]
+                
+        
+        if _attention_mask is None:
+            self._attention_mask = {
+                "causal_mask": causal_mask.detach().to('cpu'),
+                "graph_attention_mask": graph_attention_mask.detach().to('cpu') if graph_attention_mask is not None else None,
+            }
+        
+        
         hidden_states = inputs_embeds
         position_embeddings = self.rotary_emb(hidden_states, position_ids)
 
@@ -412,6 +401,7 @@ class GraphMistralForCausalLM(MistralPreTrainedModel, GenerationMixin):
         logits_to_keep: Union[int, torch.Tensor] = 0,
         token_type_ids: Optional[torch.LongTensor] = None,
         graph_attention_mask: Optional[torch.Tensor] = None,
+        graph_token_indices: Optional[torch.Tensor] = None,
         **kwargs: Unpack[TransformersKwargs],
     ) -> CausalLMOutputWithPast:
 
@@ -424,6 +414,8 @@ class GraphMistralForCausalLM(MistralPreTrainedModel, GenerationMixin):
             use_cache=use_cache,
             cache_position=cache_position,
             graph_attention_mask=graph_attention_mask,
+            graph_token_indices=graph_token_indices,
+            token_type_ids=token_type_ids,
             **kwargs,
         )
 
